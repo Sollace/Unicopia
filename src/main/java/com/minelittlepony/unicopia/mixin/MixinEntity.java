@@ -20,6 +20,7 @@ import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.entity.Equine;
 import com.minelittlepony.unicopia.entity.Living;
+import com.minelittlepony.unicopia.entity.Transportation;
 import com.minelittlepony.unicopia.entity.duck.EntityDuck;
 
 import net.minecraft.block.BlockState;
@@ -35,16 +36,23 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
 
 @Mixin(Entity.class)
-abstract class MixinEntity implements EntityDuck, Trackable {
+abstract class MixinEntity implements EntityDuck, Trackable, Transportation.Holder<Entity> {
     @Nullable
     private transient Caster<?> host;
 
     private DataTrackerManager dataTrackerManager;
 
+    private final Transportation<Entity> transportation = new Transportation<>((Entity)(Object)this);
+
     @Override
     @Nullable
     public Caster<?> getHost() {
         return host;
+    }
+
+    @Override
+    public Transportation<Entity> get() {
+        return transportation;
     }
 
     @Override
@@ -147,40 +155,21 @@ abstract class MixinEntity implements EntityDuck, Trackable {
 
     @ModifyVariable(method = "move", at = @At("HEAD"), argsOnly = true)
     private Vec3d beforeMove(Vec3d velocity, MovementType movementType, Vec3d copyOfMovement) {
-        Living<?> living = Living.living((Entity)(Object)this);
-        if (living != null) {
-            living.getTransportation().beforeMove(velocity, movementType);
-        }
-        return velocity;
+        return transportation.beforeMove(velocity, movementType);
     }
 
     @Inject(method = "move", at = @At("RETURN"))
     private void afterMove(MovementType movementType, Vec3d movement, CallbackInfo info) {
-        Living<?> living = Living.living((Entity)(Object)this);
-        if (living != null) {
-            living.getTransportation().afterMove(movementType);
-        }
+        transportation.afterMove(movementType);
     }
 
-    @ModifyVariable(
-            method = "applyMoveEffect",
-            at = @At("HEAD"),
-            argsOnly = true
-    )
+    @ModifyVariable(method = "applyMoveEffect", at = @At("HEAD"), argsOnly = true)
     private BlockState modifyPrimarySteppingStateOnMove(BlockState state) {
-        Living<?> living = Living.living((Entity)(Object)this);
-        if (living != null) {
-            return living.getTransportation().getSteppingState(living.asEntity().getSteppingPos()).orElse(state);
-        }
-        return state;
+        return transportation.getSteppingState().orElse(state);
     }
 
     @ModifyVariable(method = "applyMoveEffect", at = @At("STORE"), ordinal = 1)
     private BlockState modifySteppingStateOnMove(BlockState state) {
-        Living<?> living = Living.living((Entity)(Object)this);
-        if (living != null) {
-            return living.getTransportation().getSteppingState(living.asEntity().getSteppingPos()).orElse(state);
-        }
-        return state;
+        return transportation.getSteppingState().orElse(state);
     }
 }

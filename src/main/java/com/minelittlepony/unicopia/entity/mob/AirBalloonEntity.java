@@ -44,7 +44,6 @@ import java.util.stream.Stream;
 import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.advancement.UCriteria;
-import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.Transportation;
 import com.minelittlepony.unicopia.entity.collision.EntityCollisions;
 import com.minelittlepony.unicopia.entity.collision.MultiBox;
@@ -74,11 +73,12 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
 
     private static final Predicate<Entity> RIDER_PREDICATE = EntityPredicates.EXCEPT_SPECTATOR.and(e -> {
         return !(e instanceof PlayerEntity p && p.getAbilities().flying);
-    });
+    }).and(e -> !(e instanceof FlyingVehicleEntity));
 
     private boolean prevBoosting;
     private int prevInflation;
     private Vec3d manualVelocity = Vec3d.ZERO;
+    private Vec3d lastPos = Vec3d.ZERO;
 
     private int maxFuel = 10000;
     private int activeFuel;
@@ -91,6 +91,8 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
     private double xDelta;
     private double prevZDelta;
     private double zDelta;
+
+    private List<Transportation<Entity>> passengers = List.of();
 
     public AirBalloonEntity(EntityType<? extends AirBalloonEntity> type, World world) {
         super(type, world);
@@ -216,6 +218,8 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
 
     @Override
     public void tick() {
+        updatePassengers();
+
         setAir(getMaxAir());
         int boostTicks = getBoostTicks();
 
@@ -341,13 +345,37 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
         super.tick();
 
         if (!getWorld().isClient && this.velocityDirty) {
-            this.refreshPosition();
+            refreshPosition();
         }
 
         prevXDelta = xDelta;
         prevZDelta = zDelta;
         xDelta = getX() - lastX;
         zDelta = getZ() - lastZ;
+
+        movePassengers(getPos().subtract(lastPos));
+        lastPos = getPos();
+    }
+
+    private void updatePassengers() {
+        this.passengers.forEach(passenger -> passenger.setVehicle(null));
+        this.passengers = getCollidingEntities(getGravityZoneBoxes().stream()).entrySet().stream()
+                .flatMap(entry -> entry.getValue().stream())
+                .distinct()
+                .map(Transportation::of)
+                .filter(passenger -> passenger.setVehicle(this))
+                .toList();
+    }
+
+    private void movePassengers(Vec3d positionChange) {
+        if (isAirworthy() && !isOnGround()) {
+            passengers.forEach(passenger -> {
+                passenger.move(positionChange);
+            });
+        }
+        passengers.forEach(passenger -> {
+            passenger.tickRiding();
+        });
     }
 
     @Override
@@ -569,20 +597,6 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
     }
 
     @Override
-    public void tickMovement() {
-        super.tickMovement();
-        if (isAirworthy()) {
-            Map<Box, List<Entity>> collidingEntities = getCollidingEntities(getBoundingBoxes(getBoundingBox()).stream());
-            Vec3d actualMovement = getPos().subtract(new Vec3d(lastX, lastY, lastZ));
-            for (Map.Entry<Box, List<Entity>> passengers : collidingEntities.entrySet()) {
-                for (Entity passenger : passengers.getValue()) {
-                    movePassenger(passenger, actualMovement);
-                }
-            }
-        }
-    }
-
-    @Override
     protected Box calculateDefaultBoundingBox(Vec3d pos) {
         Box mainBox = super.calculateDefaultBoundingBox(pos);
         return MultiBox.of(mainBox, getBoundingBoxes(mainBox), getInteractionZones(mainBox));
@@ -616,12 +630,12 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
         if (hasBalloon() && getInflation(1) > 0.999F) {
             return List.of(
                     // interior - slim layer above the bottom of the basket
-                    interior.withMaxY(interior.maxY).withMinY(interior.maxY - 2),
+                    interior.withMaxY(interior.maxY + 1.5).withMinY(interior.maxY - 2),
                     // balloon - slim layer on top of the balloon
-                    balloon.withMaxY(balloon.maxY).withMinY(balloon.maxY - 2)
+                    balloon.withMaxY(balloon.maxY + 0.5).withMinY(balloon.maxY - 2)
             );
         }
-        return List.of(interior.withMaxY(interior.maxY).withMinY(interior.maxY - 2));
+        return List.of(interior.withMaxY(interior.maxY + 1.5).withMinY(interior.maxY - 2));
     }
 
     @Override
@@ -697,37 +711,6 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
         }
 
         return boxes;
-    }
-
-    @Override
-    public void move(MovementType movementType, Vec3d movement) {
-        Vec3d prevPos = getPos();
-        super.move(movementType, movement);
-        if (isAirworthy()) {
-            Map<Box, List<Entity>> collidingEntities = getCollidingEntities(getBoundingBoxes(getBoundingBox()).stream());
-            Vec3d actualMovement = getPos().subtract(prevPos);
-            for (Map.Entry<Box, List<Entity>> passengers : collidingEntities.entrySet()) {
-                for (Entity passenger : passengers.getValue()) {
-                    movePassenger(passenger, actualMovement);
-                }
-            }
-        }
-    }
-
-    private void movePassenger(Entity passenger, Vec3d movement) {
-        if (!EntityPredicates.EXCEPT_SPECTATOR.test(passenger)) {
-            return;
-        }
-
-        Living<?> living = Living.living(passenger);
-        if (living != null) {
-            if (living.getPhysics().isGravityNegative()) {
-                movement = movement.multiply(1, -1, 1);
-            }
-            living.getTransportation().setVehicle(this);
-        } else {
-            Transportation.moveWithinVehicle(this, passenger, movement);
-        }
     }
 
     @Override

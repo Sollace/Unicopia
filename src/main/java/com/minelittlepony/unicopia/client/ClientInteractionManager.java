@@ -159,6 +159,15 @@ public class ClientInteractionManager extends InteractionManager {
     }
 
     @Override
+    public void tickEntity(Entity entity) {
+        if (entity.getWorld() instanceof ClientWorld cw) {
+            cw.tickEntity(cw::tickEntity, entity);
+        } else {
+            super.tickEntity(entity);
+        }
+    }
+
+    @Override
     @NotNull
     public PlayerEntity createPlayer(World world, GameProfile profile) {
         if (world instanceof ClientWorld cw) {

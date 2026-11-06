@@ -107,7 +107,6 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     private final LandingEventHandler landEvent = addTicker(new LandingEventHandler(this));
     private final NbtMap<Identifier, Float> enchants = NbtMap.of(Identifier.CODEC, Codec.FLOAT);
     private final ItemTracker armour = addTicker(new ItemTracker(this));
-    private final Transportation<T> transportation = new Transportation<>(this);
 
     protected final DataTrackerManager trackers;
     protected final DataTracker tracker;
@@ -180,10 +179,6 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
     public ItemTracker getArmour() {
         return armour;
-    }
-
-    public Transportation<T> getTransportation() {
-        return transportation;
     }
 
     @Override
@@ -276,7 +271,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
             InteractionManager.getInstance().playLoopingSound(entity, InteractionManager.SOUND_GEM_FINDING_MAGIC_HUM, 0);
         }
 
-        transportation.tick();
+        Transportation.of(entity).tick();
     }
 
     @Override

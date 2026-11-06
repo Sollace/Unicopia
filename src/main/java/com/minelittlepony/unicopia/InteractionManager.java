@@ -18,6 +18,7 @@ import com.mojang.authlib.GameProfile;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.recipe.display.CuttingRecipeDisplay;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
@@ -89,6 +90,12 @@ public class InteractionManager {
     }
 
     public void openScreen(int type) {
+    }
+
+    public void tickEntity(Entity entity) {
+        if (entity.getWorld() instanceof ServerWorld sw) {
+            sw.tickEntity(sw::tickEntity, entity);
+        }
     }
 
     /**

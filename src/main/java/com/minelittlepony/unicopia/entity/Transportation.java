@@ -1,11 +1,12 @@
 package com.minelittlepony.unicopia.entity;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
-
+import java.util.Stack;
+import java.util.UUID;
 import org.jetbrains.annotations.Nullable;
+import org.spongepowered.include.com.google.common.base.Preconditions;
 
+import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.entity.mob.AirBalloonEntity;
@@ -13,185 +14,157 @@ import com.minelittlepony.unicopia.entity.mob.FlyingVehicleEntity;
 import com.minelittlepony.unicopia.util.Tickable;
 
 import net.minecraft.block.BlockState;
-import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.shape.VoxelShape;
 
-public class Transportation<T extends LivingEntity> implements Tickable {
+public class Transportation<T extends Entity> implements Tickable {
+    private final T entity;
 
-    private final Living<T> living;
-
+    @Nullable
+    private UUID lastVehicleUuid;
     @Nullable
     private FlyingVehicleEntity vehicle;
 
+    private Box groundBox = null;
+
     private int ticksInVehicle;
 
-    @Nullable
-    private Vec3d lastVehiclePosition;
+    private final Stack<Boolean> inVehicleTick = new Stack<>();
 
-    Transportation(Living<T> living) {
-        this.living = living;
+    public Transportation(T entity) {
+        this.entity = entity;
     }
 
-    public void setVehicle(@Nullable FlyingVehicleEntity vehicle) {
+    public boolean hasVehicle() {
+        return vehicle != null;
+    }
+
+    public boolean canTick() {
+        if (entity instanceof PlayerEntity && vehicle == null) {
+            Unicopia.LOGGER.info(entity.age + " Normal player tick");
+        }
+        return vehicle == null || (!inVehicleTick.isEmpty() && inVehicleTick.pop());
+    }
+
+    public boolean setVehicle(@Nullable FlyingVehicleEntity vehicle) {
+        if (vehicle != null && (entity.isRemoved()
+                || entity.noClip
+                || entity.isSpectator()
+                || (entity instanceof PlayerEntity ply && ply.getAbilities().flying)
+                || entity.isConnectedThroughVehicle(vehicle))) {
+            vehicle = null;
+        }
         this.vehicle = vehicle;
-        lastVehiclePosition = vehicle == null ? null : vehicle.getPos();
+        groundBox = null;
+        if (vehicle != null) {
+            Box entityBox = entity.getBoundingBox().expand(MathHelper.EPSILON);
+            for (var zone : vehicle.getBoundingBoxes(vehicle.getBoundingBox())) {
+                if (entityBox.intersects(zone)) {
+                    groundBox = zone;
+                    break;
+                }
+            }
+        }
+        return vehicle != null;
     }
 
     @Override
     public void tick() {
-        if (vehicle != null) {
-            ticksInVehicle++;
-        } else {
+        if (hasVehicle() && !vehicle.getUuid().equals(lastVehicleUuid)) {
+            lastVehicleUuid = vehicle.getUuid();
             ticksInVehicle = 0;
         }
+        ticksInVehicle = hasVehicle() ? (ticksInVehicle + 1) : 0;
 
         if (ticksInVehicle > 20 && vehicle instanceof AirBalloonEntity b
                 && !b.isOnGround() && b.hasBalloon() && b.hasBurner() && b.isAscending()) {
-            UCriteria.RIDE_BALLOON.trigger(living.asEntity());
+            UCriteria.RIDE_BALLOON.trigger(entity);
         }
     }
 
-    public void updatePreviousPosition() {
-        lastVehiclePosition = vehicle == null ? Vec3d.ZERO : vehicle.getPos();
+    public void move(Vec3d positionChange) {
+        entity.resetPosition();
+        Vec3d newPos = entity.getPos().add(positionChange);
+        if (groundBox != null) {
+            newPos = new Vec3d(newPos.x, Math.max(newPos.y, groundBox.maxY), newPos.z);
+        }
+        entity.setPosition(newPos);
+    }
+
+    public void tickRiding() {
+        int count = inVehicleTick.size();
+        try {
+            inVehicleTick.push(true);
+            Vec3d pos = new Vec3d(entity.lastX, entity.lastY, entity.lastZ);
+            InteractionManager.getInstance().tickEntity(entity);
+            if (groundBox != null) {
+                Box entityBox = entity.getBoundingBox();
+                if (entityBox.minY < groundBox.maxY) {
+                    entity.setPos(entity.getX(), groundBox.maxY, entity.getZ());
+                    entity.setVelocity(entity.getVelocity().multiply(1, 0, 1));
+                    pos = new Vec3d(pos.x, Math.max(groundBox.maxY, pos.y), pos.z);
+                }
+            }
+
+            entity.lastX = entity.lastRenderX = pos.x;
+            entity.lastY = entity.lastRenderY = pos.y;
+            entity.lastZ = entity.lastRenderZ = pos.z;
+        } finally {
+            if (count < inVehicleTick.size()) {
+                Preconditions.checkState(inVehicleTick.pop(), "Vehicle tick recursion stack got corrupted");
+            }
+        }
     }
 
     public void tickMovement() {
-        if (vehicle == null) {
-            setVehicle(findVehicle());
-            if (vehicle == null) {
-                return;
-            }
-        }
-        Entity entity = living.asEntity();
-
-        @Nullable
-        Box constraintBox = getContraintBox(vehicle, entity);
-        if (constraintBox == null) {
-            setVehicle(null);
-            Unicopia.LOGGER.info("Passenger disconnected from vehicle");
-            return;
-        }
-
-        if (!entity.noClip) {
-            Vec3d movement = lastVehiclePosition == null ? vehicle.getVelocity() : vehicle.getPos().subtract(lastVehiclePosition);
-            Unicopia.LOGGER.info("[{}] Passenger Moving Self {}", vehicle.getWorld().isClient ? "CLIENT" : "SERVER", entity.getName());
-            moveWithinVehicle(vehicle, entity, movement);
-        }
-
-        lastVehiclePosition = vehicle.getPos();
     }
 
     public Vec3d beforeMove(Vec3d velocity, MovementType movementType) {
         if (vehicle == null) {
             return velocity;
         }
-
-        Entity entity = living.asEntity();
-
-        if (!entity.noClip) {
-            //Vec3d movement = lastVehiclePosition == null ? Vec3d.ZERO : vehicle.getPos().subtract(lastVehiclePosition);
-            //moveWithinVehicle(vehicle, entity, movement);
+        if (groundBox != null && entity.getY() + velocity.y < groundBox.maxY) {
+            return new Vec3d(velocity.x, groundBox.maxY - entity.getBoundingBox().minY, velocity.z);
         }
         return velocity;
     }
 
     public void afterMove(MovementType movementType) {
-        if (vehicle == null) {
-            return;
-        }
-
-        Entity entity = living.asEntity();
-
-        if (!entity.noClip) {
-            //Vec3d movement = lastVehiclePosition == Vec3d.ZERO ? Vec3d.ZERO : vehicle.getPos().subtract(lastVehiclePosition);
-            //moveWithinVehicle(vehicle, entity, movement);
-        }
-    }
-
-    public static void moveWithinVehicle(FlyingVehicleEntity vehicle, Entity passenger, Vec3d movement) {
-        @Nullable
-        Box constraintBox = getContraintBox(vehicle, passenger);
-        if (constraintBox == null) {
-            return;
-        }
-
-        List<VoxelShape> shapes = new ArrayList<>();
-        vehicle.getCollissionShapes(ShapeContext.of(passenger), shapes::add);
-        //movement = Entity.adjustMovementForCollisions(passenger, movement, passenger.getBoundingBox(), vehicle.getWorld(), shapes);
-
-        Vec3d newPos = passenger.getPos().add(movement);
-
-        if (!vehicle.isOnGround()) {
-
-            // surface check to prevent the player from floating
-            if (newPos.getY() > constraintBox.minY + 0.1 || newPos.getY() < constraintBox.minY + 0.1) {
-               // newPos = new Vec3d(newPos.getX(), constraintBox.minY + 0.01, newPos.getZ());
-            }
-
-            // containment checks to prevent the player from falling out of the basket when in flight
-            if (passenger.getPos().getY() < vehicle.getY()) {
-                double maxDeviation = 0.1;
-                double z = MathHelper.clamp(newPos.getZ(), constraintBox.minZ + maxDeviation, constraintBox.maxZ - maxDeviation);
-                double x = MathHelper.clamp(newPos.getX(), constraintBox.minX + maxDeviation, constraintBox.maxX - maxDeviation);
-
-                //newPos = new Vec3d(x, constraintBox.maxY, z);
+        if (groundBox != null) {
+            Box entityBox = entity.getBoundingBox();
+            if (entityBox.minY < groundBox.maxY) {
+                entity.setPos(entity.getX(), groundBox.maxY, entity.getZ());
+                entity.setVelocity(entity.getVelocity().multiply(1, 0, 1));
             }
         }
-
-        passenger.setPosition(newPos);
-        passenger.updateTrackedPosition(newPos.getX(), newPos.getY(), newPos.getZ());
     }
 
-    public Optional<BlockState> getSteppingState(BlockPos pos) {
-        Entity entity = living.asEntity();
-        Box boundingBox = entity.getBoundingBox().stretch(entity.getVelocity()).expand(0.1);
-        if (vehicle == null) {
-            return Optional.empty();
+    public Optional<BlockState> getSteppingState() {
+        if (hasVehicle()) {
+            setOnGround();
+            return vehicle.getSteppingState(entity.getBoundingBox().expand(MathHelper.EPSILON));
         }
 
-        setOnGround();
-        return vehicle.getSteppingState(boundingBox);
-    }
-
-    private FlyingVehicleEntity findVehicle() {
-        Entity entity = living.asEntity();
-        return living.asWorld().getOtherEntities(entity, entity.getBoundingBox().expand(0.5), e -> e instanceof FlyingVehicleEntity)
-                .stream()
-                .map(v -> (FlyingVehicleEntity)v)
-                .findFirst().orElse(null);
+        return Optional.empty();
     }
 
     private void setOnGround() {
-        if (vehicle == null) {
-            return;
-        }
-        Entity entity = living.asEntity();
         entity.setOnGround(true);
         entity.onLanding();
         entity.verticalCollision = true;
-        entity.groundCollision = getVehicleRelativeVelocity().getY() < 0;
+        entity.groundCollision = entity.getVelocity().getY() < 0;
     }
 
-    private Vec3d getVehicleRelativeVelocity() {
-        return living.asEntity().getVelocity().subtract(vehicle.getVelocity());
+    @SuppressWarnings("unchecked")
+    public static <T extends Entity> Transportation<T> of(T entity) {
+        return ((Holder<T>)entity).get();
     }
 
-    @Nullable
-    private static Box getContraintBox(FlyingVehicleEntity vehicle, Entity passenger) {
-        Box entityBox = passenger.getBoundingBox().stretch(passenger.getVelocity()).expand(0.1, 1, 0.1);
-        for (Box box : vehicle.getGravityZoneBoxes()) {
-            if (entityBox.intersects(box.stretch(vehicle.getVelocity()))) {
-                return box;
-            }
-        }
-
-        return null;
+    public interface Holder<T extends Entity> {
+        Transportation<T> get();
     }
 }
