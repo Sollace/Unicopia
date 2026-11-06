@@ -143,9 +143,9 @@ public class LevitatingItemActionWheel {
 
         currentAction = selection < 0 || selection >= options.size() ? defaultAction : options.get(selection);
 
-        DrawableUtil.drawArc(context, ringInnerDiameter, ringInnerDiameter + 1, 0, DrawableUtil.TAU, 0xFFFFFF22);
-        DrawableUtil.drawArc(context, ringInnerDiameter, ringOuterDiameter, 0, DrawableUtil.TAU, 0x00000055);
-        DrawableUtil.drawArc(context, ringOuterDiameter, ringOuterDiameter + ringMarkerWidth, theta - segmentAngle / 2, segmentAngle, 0xFFFFFF45);
+        DrawableUtil.drawArc(context, ringInnerDiameter, ringInnerDiameter + 1, 0, DrawableUtil.TAU, 0xFFFFFFFF);
+        DrawableUtil.drawArc(context, ringInnerDiameter, ringOuterDiameter, 0, DrawableUtil.TAU, 0xFF555555);
+        DrawableUtil.drawArc(context, ringOuterDiameter, ringOuterDiameter + ringMarkerWidth, theta - segmentAngle / 2, segmentAngle, 0xFF454545);
 
         Text selectedItemLabel = currentAction.getLabel();
         context.drawText(client.textRenderer, selectedItemLabel, -client.textRenderer.getWidth(selectedItemLabel) / 2, -client.textRenderer.fontHeight / 2, Colors.WHITE, true);
@@ -154,7 +154,7 @@ public class LevitatingItemActionWheel {
             double segmentMinAngle = (i * segmentAngle + segmentsStartAngle) % DrawableUtil.TAU;
 
             if (i == selection) {
-                DrawableUtil.drawArc(context, ringInnerDiameter, ringOuterDiameter, segmentMinAngle, segmentAngle, 0xFFFFFF25);
+                DrawableUtil.drawArc(context, ringInnerDiameter, ringOuterDiameter, segmentMinAngle, segmentAngle, 0xFFFFFFFF);
             }
 
             LevitatingItemEntity.Action action = options.get(i);
