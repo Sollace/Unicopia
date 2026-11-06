@@ -7,6 +7,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -21,6 +22,7 @@ import com.minelittlepony.unicopia.entity.Equine;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.duck.EntityDuck;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.MovementType;
@@ -77,10 +79,6 @@ abstract class MixinEntity implements EntityDuck, Trackable {
     public abstract void setVehicle(Entity vehicle);
 
     @Override
-    @Accessor
-    public abstract float getNextStepSoundDistance();
-
-    @Override
     public boolean isLavaAffine() {
         Entity self = (Entity)(Object)this;
         return self.hasVehicle() && self.getVehicle() instanceof LavaAffine affine && affine.isLavaAffine();
@@ -134,7 +132,7 @@ abstract class MixinEntity implements EntityDuck, Trackable {
 
     @Inject(method = "dropStack(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/item/ItemStack;F)Lnet/minecraft/entity/ItemEntity;", at = @At("HEAD"), cancellable = true)
     private void onDropStack(ServerWorld world, ItemStack stack, float yOffset, CallbackInfoReturnable<ItemEntity> info) {
-        if (getHost() != null) {
+        if (hasHost()) {
             info.setReturnValue(null);
         }
     }
@@ -147,19 +145,42 @@ abstract class MixinEntity implements EntityDuck, Trackable {
         return item;
     }
 
-    @Inject(method = "move", at = @At("HEAD"))
-    private void beforeMove(MovementType movementType, Vec3d movement, CallbackInfo info) {
+    @ModifyVariable(method = "move", at = @At("HEAD"), argsOnly = true)
+    private Vec3d beforeMove(Vec3d velocity, MovementType movementType, Vec3d copyOfMovement) {
         Living<?> living = Living.living((Entity)(Object)this);
         if (living != null) {
-            living.getTransportation().updatePreviousPosition();
+            living.getTransportation().beforeMove(velocity, movementType);
         }
+        return velocity;
     }
 
     @Inject(method = "move", at = @At("RETURN"))
     private void afterMove(MovementType movementType, Vec3d movement, CallbackInfo info) {
         Living<?> living = Living.living((Entity)(Object)this);
         if (living != null) {
-            living.getTransportation().onMove(movementType);
+            living.getTransportation().afterMove(movementType);
         }
+    }
+
+    @ModifyVariable(
+            method = "applyMoveEffect",
+            at = @At("HEAD"),
+            argsOnly = true
+    )
+    private BlockState modifyPrimarySteppingStateOnMove(BlockState state) {
+        Living<?> living = Living.living((Entity)(Object)this);
+        if (living != null) {
+            return living.getTransportation().getSteppingState(living.asEntity().getSteppingPos()).orElse(state);
+        }
+        return state;
+    }
+
+    @ModifyVariable(method = "applyMoveEffect", at = @At("STORE"), ordinal = 1)
+    private BlockState modifySteppingStateOnMove(BlockState state) {
+        Living<?> living = Living.living((Entity)(Object)this);
+        if (living != null) {
+            return living.getTransportation().getSteppingState(living.asEntity().getSteppingPos()).orElse(state);
+        }
+        return state;
     }
 }

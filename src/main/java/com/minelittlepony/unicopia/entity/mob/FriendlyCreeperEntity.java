@@ -196,7 +196,7 @@ public class FriendlyCreeperEntity extends TameableEntity implements Angerable {
 
             lastHugTime = hugTime;
 
-            if (!isTamed() && ((Guest)this).getHost() == null) {
+            if (!isTamed() && !Guest.of(this).hasHost()) {
                 if (isConverting()) {
                     if (++hugTime >= 100) {
                         if (!getWorld().isClient) {

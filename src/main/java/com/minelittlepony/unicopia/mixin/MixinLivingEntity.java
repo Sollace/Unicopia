@@ -34,7 +34,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
 
 @Mixin(LivingEntity.class)
-abstract class MixinLivingEntity extends Entity implements LivingEntityDuck, Equine.Container<Living<?>> {
+abstract class MixinLivingEntity extends Entity implements LivingEntityDuck {
     @Shadow
     protected ItemStack activeItemStack;
     @Shadow
@@ -198,6 +198,11 @@ abstract class MixinLivingEntity extends Entity implements LivingEntityDuck, Equ
         if (tag.contains("unicopia_caster")) {
             get().fromNBT(tag.getCompoundOrEmpty("unicopia_caster"), getWorld().getRegistryManager());
         }
+    }
+
+    @Inject(method = "tickMovement", at = @At("HEAD"))
+    public void beforeMovementTick(CallbackInfo info) {
+        get().getTransportation().tickMovement();
     }
 
     @Override

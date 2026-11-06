@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.entity.mob;
 
+import java.util.Optional;
 import java.util.UUID;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,6 +21,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Uuids;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -34,6 +36,8 @@ public abstract class FlyingVehicleEntity extends MobEntity implements MultiBoun
     protected abstract int getSeatCount();
 
     protected abstract Vec3d getSeatPosition(int seatIndex);
+
+    public abstract Optional<BlockState> getSteppingState(Box entityBox);
 
     protected int getSeatFor(Entity passenger) {
         double closestDistance = Double.MAX_VALUE;
@@ -111,7 +115,7 @@ public abstract class FlyingVehicleEntity extends MobEntity implements MultiBoun
 
     @Override
     protected boolean canAddPassenger(Entity passenger) {
-        return this.getPassengerList().size() < seats.length && getSeatFor(passenger) != -1;
+        return getPassengerList().size() < seats.length && getSeatFor(passenger) != -1;
     }
 
     @Override

@@ -9,7 +9,6 @@ import com.minelittlepony.unicopia.entity.collision.EntityCollisions.ComplexColl
 
 import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.Entity;
-import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -22,8 +21,6 @@ public interface MultiBoundingBoxEntity extends ComplexCollidable {
     }
 
     Map<Box, List<Entity>> getCollidingEntities(Stream<Box> boundingBoxes);
-
-    SoundEvent getWalkedOnSound(double y);
 
     @Override
     default void getCollissionShapes(ShapeContext context, Consumer<VoxelShape> output) {

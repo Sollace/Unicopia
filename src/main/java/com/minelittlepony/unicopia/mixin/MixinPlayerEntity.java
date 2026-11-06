@@ -28,7 +28,7 @@ import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
 
 @Mixin(PlayerEntity.class)
-abstract class MixinPlayerEntity extends LivingEntity implements Equine.Container<Pony>, PlayerEntityDuck {
+abstract class MixinPlayerEntity extends LivingEntity implements PlayerEntityDuck {
     private MixinPlayerEntity() { super(null, null); }
     @Override
     @Invoker("updateCapeAngles")
@@ -55,7 +55,6 @@ abstract class MixinPlayerEntity extends LivingEntity implements Equine.Containe
         if (!getWorld().isClient) {
             get().trySleep(pos).ifPresent(reason -> {
                 ((PlayerEntity)(Object)this).sendMessage(reason, true);
-
                 info.setReturnValue(Either.left(ServerPlayerEntity.SleepFailureReason.OTHER_PROBLEM));
             });
         }
@@ -66,11 +65,9 @@ abstract class MixinPlayerEntity extends LivingEntity implements Equine.Containe
         return get().getMotion().getDimensions().calculateDimensions(dimensions);
     }
 
-    @Inject(method = "getBlockBreakingSpeed(Lnet/minecraft/block/BlockState;)F",
-            at = @At("RETURN"),
-            cancellable = true)
-    private void onGetBlockBreakingSpeed(BlockState state, CallbackInfoReturnable<Float> info) {
-        info.setReturnValue(info.getReturnValue() * get().getBlockBreakingSpeed());
+    @ModifyReturnValue(method = "getBlockBreakingSpeed(Lnet/minecraft/block/BlockState;)F", at = @At("RETURN"))
+    private float onGetBlockBreakingSpeed(float speed, BlockState state) {
+        return speed * get().getBlockBreakingSpeed();
     }
 
     @Override

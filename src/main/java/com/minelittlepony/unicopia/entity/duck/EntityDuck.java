@@ -18,8 +18,6 @@ public interface EntityDuck extends LavaAffine, PehkuiEntityExtensions, Guest {
 
     void setVehicle(Entity vehicle);
 
-    float getNextStepSoundDistance();
-
     @Override
     default void setLavaAffine(boolean lavaAffine) {
 

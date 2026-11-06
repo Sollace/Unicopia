@@ -164,21 +164,21 @@ public interface UItems {
     Item SPELLBOOK = register("spellbook", s -> new SpellbookItem(s.maxCount(1).rarity(Rarity.UNCOMMON)), ItemGroups.TOOLS);
     Item TORN_PAGE = register("torn_page", Item::new, ItemGroups.INGREDIENTS);
 
-    Item OAK_BASKET = register("oak_basket", s -> new BasketItem(AirBalloonEntity.BasketType.of(WoodType.OAK), s.maxCount(1)), ItemGroups.TOOLS);
-    Item SPRUCE_BASKET = register("spruce_basket", s -> new BasketItem(AirBalloonEntity.BasketType.of(WoodType.SPRUCE), s.maxCount(1)), ItemGroups.TOOLS);
-    Item BIRCH_BASKET = register("birch_basket", s -> new BasketItem(AirBalloonEntity.BasketType.of(WoodType.BIRCH), s.maxCount(1)), ItemGroups.TOOLS);
-    Item JUNGLE_BASKET = register("jungle_basket", s -> new BasketItem(AirBalloonEntity.BasketType.of(WoodType.JUNGLE), s.maxCount(1)), ItemGroups.TOOLS);
-    Item ACACIA_BASKET = register("acacia_basket", s -> new BasketItem(AirBalloonEntity.BasketType.of(WoodType.ACACIA), s.maxCount(1)), ItemGroups.TOOLS);
-    Item CHERRY_BASKET = register("cherry_basket", s -> new BasketItem(AirBalloonEntity.BasketType.of(WoodType.CHERRY), s.maxCount(1)), ItemGroups.TOOLS);
-    Item DARK_OAK_BASKET = register("dark_oak_basket", s -> new BasketItem(AirBalloonEntity.BasketType.of(WoodType.DARK_OAK), s.maxCount(1)), ItemGroups.TOOLS);
-    Item PALE_OAK_BASKET = register("pale_oak_basket", s -> new BasketItem(AirBalloonEntity.BasketType.of(WoodType.PALE_OAK), s.maxCount(1)), ItemGroups.TOOLS);
-    Item MANGROVE_BASKET = register("mangrove_basket", s -> new BasketItem(AirBalloonEntity.BasketType.of(WoodType.MANGROVE), s.maxCount(1)), ItemGroups.TOOLS);
-    Item BAMBOO_BASKET = register("bamboo_basket", s -> new BasketItem(AirBalloonEntity.BasketType.of(WoodType.BAMBOO), s.maxCount(1)), ItemGroups.TOOLS);
-    Item CRIMSON_BASKET = register("crimson_basket", s -> new BasketItem(AirBalloonEntity.BasketType.of(WoodType.CRIMSON), s.maxCount(1)), ItemGroups.TOOLS);
-    Item WARPED_BASKET = register("warped_basket", s -> new BasketItem(AirBalloonEntity.BasketType.of(WoodType.WARPED), s.maxCount(1)), ItemGroups.TOOLS);
-    Item PALM_BASKET = register("palm_basket", s -> new BasketItem(AirBalloonEntity.BasketType.of(UWoodTypes.PALM), s.maxCount(1)), ItemGroups.TOOLS);
-    Item ZAP_BASKET = register("zap_basket", s -> new BasketItem(AirBalloonEntity.BasketType.of(UWoodTypes.ZAP), s.maxCount(1)), ItemGroups.TOOLS);
-    Item GOLDEN_OAK_BASKET = register("golden_oak_basket", s -> new BasketItem(AirBalloonEntity.BasketType.of(UWoodTypes.GOLDEN_OAK), s.maxCount(1)), ItemGroups.TOOLS);
+    Item OAK_BASKET = register("oak_basket", s -> new BasketItem(AirBalloonEntity.BasketType.of(WoodType.OAK, Blocks.OAK_PLANKS), s.maxCount(1)), ItemGroups.TOOLS);
+    Item SPRUCE_BASKET = register("spruce_basket", s -> new BasketItem(AirBalloonEntity.BasketType.of(WoodType.SPRUCE, Blocks.SPRUCE_PLANKS), s.maxCount(1)), ItemGroups.TOOLS);
+    Item BIRCH_BASKET = register("birch_basket", s -> new BasketItem(AirBalloonEntity.BasketType.of(WoodType.BIRCH, Blocks.BIRCH_PLANKS), s.maxCount(1)), ItemGroups.TOOLS);
+    Item JUNGLE_BASKET = register("jungle_basket", s -> new BasketItem(AirBalloonEntity.BasketType.of(WoodType.JUNGLE, Blocks.JUNGLE_PLANKS), s.maxCount(1)), ItemGroups.TOOLS);
+    Item ACACIA_BASKET = register("acacia_basket", s -> new BasketItem(AirBalloonEntity.BasketType.of(WoodType.ACACIA, Blocks.ACACIA_PLANKS), s.maxCount(1)), ItemGroups.TOOLS);
+    Item CHERRY_BASKET = register("cherry_basket", s -> new BasketItem(AirBalloonEntity.BasketType.of(WoodType.CHERRY, Blocks.CHERRY_PLANKS), s.maxCount(1)), ItemGroups.TOOLS);
+    Item DARK_OAK_BASKET = register("dark_oak_basket", s -> new BasketItem(AirBalloonEntity.BasketType.of(WoodType.DARK_OAK, Blocks.DARK_OAK_PLANKS), s.maxCount(1)), ItemGroups.TOOLS);
+    Item PALE_OAK_BASKET = register("pale_oak_basket", s -> new BasketItem(AirBalloonEntity.BasketType.of(WoodType.PALE_OAK, Blocks.PALE_OAK_PLANKS), s.maxCount(1)), ItemGroups.TOOLS);
+    Item MANGROVE_BASKET = register("mangrove_basket", s -> new BasketItem(AirBalloonEntity.BasketType.of(WoodType.MANGROVE, Blocks.MANGROVE_PLANKS), s.maxCount(1)), ItemGroups.TOOLS);
+    Item BAMBOO_BASKET = register("bamboo_basket", s -> new BasketItem(AirBalloonEntity.BasketType.of(WoodType.BAMBOO, Blocks.BAMBOO_PLANKS), s.maxCount(1)), ItemGroups.TOOLS);
+    Item CRIMSON_BASKET = register("crimson_basket", s -> new BasketItem(AirBalloonEntity.BasketType.of(WoodType.CRIMSON, Blocks.CRIMSON_PLANKS), s.maxCount(1)), ItemGroups.TOOLS);
+    Item WARPED_BASKET = register("warped_basket", s -> new BasketItem(AirBalloonEntity.BasketType.of(WoodType.WARPED, Blocks.WARPED_PLANKS), s.maxCount(1)), ItemGroups.TOOLS);
+    Item PALM_BASKET = register("palm_basket", s -> new BasketItem(AirBalloonEntity.BasketType.of(UWoodTypes.PALM, UBlocks.PALM_PLANKS), s.maxCount(1)), ItemGroups.TOOLS);
+    Item ZAP_BASKET = register("zap_basket", s -> new BasketItem(AirBalloonEntity.BasketType.of(UWoodTypes.ZAP, UBlocks.ZAP_PLANKS), s.maxCount(1)), ItemGroups.TOOLS);
+    Item GOLDEN_OAK_BASKET = register("golden_oak_basket", s -> new BasketItem(AirBalloonEntity.BasketType.of(UWoodTypes.GOLDEN_OAK, UBlocks.GOLDEN_OAK_PLANKS), s.maxCount(1)), ItemGroups.TOOLS);
 
     Item GIANT_BALLOON = register("giant_balloon", s -> new GiantBalloonItem(s.maxCount(1).component(UDataComponentTypes.BALLOON_DESIGN, BalloonDesignComponent.DEFAULT)), ItemGroups.TOOLS);
     Item SPECTRAL_CLOCK = register("spectral_clock", Item::new, ItemGroups.TOOLS);

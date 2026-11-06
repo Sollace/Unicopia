@@ -1,7 +1,9 @@
 package com.minelittlepony.unicopia.entity.mob;
 
 import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
-import net.minecraft.block.ShapeContext;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.WoodType;
 import net.minecraft.entity.*;
 import net.minecraft.entity.data.*;
@@ -15,7 +17,6 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
-import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -25,7 +26,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
@@ -36,9 +36,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Function;
+import java.util.Optional;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -46,6 +45,8 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.entity.Living;
+import com.minelittlepony.unicopia.entity.Transportation;
+import com.minelittlepony.unicopia.entity.collision.EntityCollisions;
 import com.minelittlepony.unicopia.entity.collision.MultiBox;
 import com.minelittlepony.unicopia.item.BasketItem;
 import com.minelittlepony.unicopia.item.UItems;
@@ -231,32 +232,34 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
 
         boolean boosting = boostTicks > 0;
 
-        if (hasBurner() && isAscending()) {
-            if (inflation < getMaxInflation()) {
-                inflation++;
-                if (boosting) {
+        if (!getWorld().isClient()) {
+            if (hasBurner() && isAscending()) {
+                if (inflation < getMaxInflation()) {
                     inflation++;
+                    if (boosting) {
+                        inflation++;
+                    }
+                    setInflation(inflation);
                 }
-                setInflation(inflation);
-            }
 
-            if (getWorld() instanceof ServerWorld sw) {
-                if (activeFuel <= 0 && !fuelItems.isEmpty()) {
-                    activeFuel = sw.getFuelRegistry().getFuelTicks(fuelItems.remove(0));
+                if (getWorld() instanceof ServerWorld sw) {
+                    if (activeFuel <= 0 && !fuelItems.isEmpty()) {
+                        activeFuel = sw.getFuelRegistry().getFuelTicks(fuelItems.remove(0));
+                    }
                 }
-            }
 
-            if (activeFuel > 0 && age % 2 == 0) {
-                activeFuel -= boosting ? 50 : 1;
-            }
+                if (activeFuel > 0 && age % 2 == 0) {
+                    activeFuel -= boosting ? 50 : 1;
+                }
 
-            if (activeFuel <= 0) {
-                setBoostTicks(0);
-                setAscending(false);
-            }
-        } else {
-            if (inflation < getMaxInflation() && inflation > 0) {
-                setInflation(--inflation);
+                if (activeFuel <= 0) {
+                    setBoostTicks(0);
+                    setAscending(false);
+                }
+            } else {
+                if (inflation < getMaxInflation() && inflation > 0) {
+                    setInflation(--inflation);
+                }
             }
         }
 
@@ -519,11 +522,17 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
     }
 
     @Override
-    public SoundEvent getWalkedOnSound(double y) {
-        if (y >= getBalloonBoundingBox(getBoundingBox()).minY) {
-            return USounds.ENTITY_HOT_AIR_BALLOON_STEP;
+    public Optional<BlockState> getSteppingState(Box entityBox) {
+        Box mainBox = getBoundingBox();
+        if (getInteriorBoundingBox(mainBox).intersects(entityBox)) {
+            return Optional.of(getBasketType().representative().getDefaultState());
         }
-        return USounds.ENTITY_HOT_AIR_BALLOON_BASKET_STEP;
+
+        if (hasBalloon() && getBalloonBoundingBox(mainBox).intersects(entityBox)) {
+            return Optional.of(Blocks.WHITE_WOOL.getDefaultState());
+        }
+
+        return Optional.empty();
     }
 
     @Override
@@ -539,7 +548,6 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
 
     @Override
     public void travel(Vec3d movementInput) {
-        System.out.println("travel" + (this.getWorld().isClient() ? "CLIENT" : "SERVER"));
         if (!isAirworthy()) {
             super.travel(movementInput);
         } else {
@@ -565,14 +573,10 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
         super.tickMovement();
         if (isAirworthy()) {
             Map<Box, List<Entity>> collidingEntities = getCollidingEntities(getBoundingBoxes(getBoundingBox()).stream());
-
+            Vec3d actualMovement = getPos().subtract(new Vec3d(lastX, lastY, lastZ));
             for (Map.Entry<Box, List<Entity>> passengers : collidingEntities.entrySet()) {
                 for (Entity passenger : passengers.getValue()) {
-                    Living<?> living = Living.living(passenger);
-                    if (living != null) {
-                        living.getTransportation().setVehicle(this);
-                    }
-
+                    movePassenger(passenger, actualMovement);
                 }
             }
         }
@@ -611,13 +615,13 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
         Box interior = getInteriorBoundingBox(mainBox).expand(0.001);
         if (hasBalloon() && getInflation(1) > 0.999F) {
             return List.of(
-                    // interior - basket to top of balloon
-                    interior.withMaxY(interior.maxY + 0.1).withMinY(interior.maxY),
-                    // balloon
-                    balloon.withMaxY(balloon.maxY + 0.5).withMinY(balloon.maxY)
+                    // interior - slim layer above the bottom of the basket
+                    interior.withMaxY(interior.maxY).withMinY(interior.maxY - 2),
+                    // balloon - slim layer on top of the balloon
+                    balloon.withMaxY(balloon.maxY).withMinY(balloon.maxY - 2)
             );
         }
-        return List.of(interior.withMaxY(interior.maxY + 0.1).withMinY(interior.maxY));
+        return List.of(interior.withMaxY(interior.maxY).withMinY(interior.maxY - 2));
     }
 
     @Override
@@ -697,15 +701,11 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
 
     @Override
     public void move(MovementType movementType, Vec3d movement) {
-        Vec3d oldPos = getPos();
-        List<Box> boundingBoxes = getGravityZoneBoxes();
+        Vec3d prevPos = getPos();
         super.move(movementType, movement);
-        if (movementType == MovementType.SELF) {
-            Vec3d actualMovement = getPos().subtract(oldPos);
-            Map<Box, List<Entity>> collidingEntities = getCollidingEntities(
-                    boundingBoxes.stream().map(box -> box.stretch(actualMovement))
-            );
-
+        if (isAirworthy()) {
+            Map<Box, List<Entity>> collidingEntities = getCollidingEntities(getBoundingBoxes(getBoundingBox()).stream());
+            Vec3d actualMovement = getPos().subtract(prevPos);
             for (Map.Entry<Box, List<Entity>> passengers : collidingEntities.entrySet()) {
                 for (Entity passenger : passengers.getValue()) {
                     movePassenger(passenger, actualMovement);
@@ -725,28 +725,21 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
                 movement = movement.multiply(1, -1, 1);
             }
             living.getTransportation().setVehicle(this);
+        } else {
+            Transportation.moveWithinVehicle(this, passenger, movement);
         }
-
-        List<VoxelShape> shapes = new ArrayList<>();
-        getCollissionShapes(ShapeContext.of(passenger), shapes::add);
-        movement = Entity.adjustMovementForCollisions(passenger, movement, passenger.getBoundingBox(), getWorld(), shapes);
-
-        passenger.setPosition(passenger.getPos().add(movement));
-        passenger.updateTrackedPosition(passenger.getX(), passenger.getY(), passenger.getZ());
     }
 
     @Override
     public Map<Box, List<Entity>> getCollidingEntities(Stream<Box> boundingBoxes) {
-        return boundingBoxes.collect(Collectors.toMap(Function.identity(), box -> {
-            return getWorld().getOtherEntities(this, box.expand(0.001).stretch(getVelocity().multiply(1)), RIDER_PREDICATE).stream().distinct().toList();
-        }));
+        return EntityCollisions.getCollidingEntities(this, boundingBoxes, RIDER_PREDICATE);
     }
 
     @Override
     public void readCustomDataFromNbt(NbtCompound compound) {
         super.readCustomDataFromNbt(compound);
-        setBasketType(BasketType.of(compound.getString("basket", "")));
-        setDesign(BalloonDesign.getType(compound.getString("design", "")));
+        setBasketType(compound.get("basket", BasketType.CODEC).orElse(BasketType.DEFAULT));
+        setDesign(compound.get("design", BalloonDesign.CODEC).orElse(BalloonDesign.NONE));
         setAscending(compound.getBoolean("burnerActive", false));
         setBoostTicks(compound.getInt("boostTicks", 0));
         prevInflation = compound.getInt("inflationAmount", 0);
@@ -758,8 +751,8 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
     @Override
     public void writeCustomDataToNbt(NbtCompound compound) {
         super.writeCustomDataToNbt(compound);
-        compound.putString("design", getDesign().asString());
-        compound.putString("basket", getBasketType().id().toString());
+        compound.put("design", BalloonDesign.CODEC, getDesign());
+        compound.put("basket", BasketType.CODEC, getBasketType());
         compound.putBoolean("burnerActive", isAscending());
         compound.putInt("boostTicks", getBoostTicks());
         compound.putInt("inflationAmount", getInflation());
@@ -845,37 +838,23 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
         public static BalloonDesign getType(int type) {
             return VALUES[Math.abs(type) % VALUES.length];
         }
-
-        @Deprecated
-        public static BalloonDesign getType(String name) {
-            return CODEC.byId(name, LUNA);
-        }
     }
 
-    public record BasketType(Identifier id, WoodType woodType) {
+    public record BasketType(Identifier id, WoodType woodType, Block representative) {
         private static final Map<Identifier, BasketType> REGISTRY = new HashMap<>();
-        public static final BasketType DEFAULT = of(WoodType.OAK);
+        public static final Codec<BasketType> CODEC = WoodType.CODEC.xmap(woodType -> REGISTRY.get(Identifier.of(woodType.name())), BasketType::woodType);
+        public static final BasketType DEFAULT = of(WoodType.OAK, Blocks.OAK_PLANKS);
 
         public boolean isOf(WoodType woodType) {
             return this.woodType == woodType;
         }
 
-        @Deprecated
-        public static BasketType of(@Nullable String name) {
-            Identifier id = name == null || name.isEmpty() ? null : Identifier.tryParse(name);
-            if (id == null) {
-                return of(WoodType.OAK);
-            }
-            return REGISTRY.get(id);
+        static BasketType of(String name) {
+            return REGISTRY.getOrDefault(Identifier.tryParse(name), DEFAULT);
         }
 
-        public static BasketType of(WoodType woodType) {
-            return REGISTRY.computeIfAbsent(Identifier.of(woodType.name()), id -> new BasketType(id, woodType));
-        }
-
-        @Deprecated
-        public static BasketType of(RegistryKey<?> id) {
-            return REGISTRY.computeIfAbsent(id.getValue(), i -> new BasketType(i, null));
+        public static BasketType of(WoodType woodType, Block representative) {
+            return REGISTRY.computeIfAbsent(Identifier.of(woodType.name()), id -> new BasketType(id, woodType, representative));
         }
     }
 }

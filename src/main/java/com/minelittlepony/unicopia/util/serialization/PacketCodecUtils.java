@@ -1,12 +1,16 @@
 package com.minelittlepony.unicopia.util.serialization;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.IntFunction;
+
+import com.minelittlepony.unicopia.util.Untyped;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
@@ -38,14 +42,13 @@ public interface PacketCodecUtils {
     PacketCodec<ByteBuf, Set<String>> STRING_SET = PacketCodecs.STRING.collect(PacketCodecs.toCollection(HashSet::new));
     PacketCodec<ByteBuf, BlockState> BLOCK_STATE = PacketCodecs.INTEGER.xmap(Block::getStateFromRawId, Block::getRawIdFromState);
 
-    Function<Class<?>, PacketCodec<ByteBuf, ?>> ENUM_CODEC_CACHE = Util.memoize(type -> {
-        final Object[] values = type.getEnumConstants();
-        return PacketCodecs.indexed(i -> values[i], i -> ((Enum<?>)i).ordinal());
+    Function<Class<? extends Enum<?>>, PacketCodec<ByteBuf, ?>> ENUM_CODEC_CACHE = Util.memoize(type -> {
+        final List<Enum<?>> values = Arrays.asList(type.getEnumConstants());
+        return PacketCodecs.indexed(values::get, Enum::ordinal);
     });
 
-    @SuppressWarnings("unchecked")
     static <T extends Enum<T>> PacketCodec<ByteBuf, T> ofEnum(Class<T> type) {
-        return (PacketCodec<ByteBuf, T>)ENUM_CODEC_CACHE.apply(type);
+        return Untyped.cast(ENUM_CODEC_CACHE.apply(type));
     }
 
     static <B extends ByteBuf, K, V> PacketCodec.ResultFunction<B, V, Map<K, V>> toMap(Function<V, K> keyFunction) {
