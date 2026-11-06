@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 
 import com.minelittlepony.unicopia.Unicopia;
@@ -27,6 +28,7 @@ import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 
 public class SpellEffectsRenderDispatcher implements SynchronousResourceReloader, IdentifiableResourceReloadListener {
     public static final SpellEffectsRenderDispatcher INSTANCE = new SpellEffectsRenderDispatcher();
@@ -70,6 +72,11 @@ public class SpellEffectsRenderDispatcher implements SynchronousResourceReloader
     public void render(MatrixStack matrices, VertexConsumerProvider vertices, int light, SpellRenderState spell) {
         var renderer = getRenderer(spell);
 
+        if (spell.casterState.debugLines != null) {
+            renderHotspot(matrices, vertices, spell.casterState);
+            renderSpellDebugInfo(matrices, vertices, spell.casterState, light);
+        }
+
         if (renderer != SpellRenderer.DEFAULT) {
             client.getBufferBuilders().getEntityVertexConsumers().draw();
             renderer.render(matrices, vertices, spell, light);
@@ -82,7 +89,11 @@ public class SpellEffectsRenderDispatcher implements SynchronousResourceReloader
         }
 
         caster.spells.forEach(spell -> {
-            render(matrices, vertices, light, spell);
+            var renderer = getRenderer(spell);
+            if (renderer != SpellRenderer.DEFAULT) {
+                client.getBufferBuilders().getEntityVertexConsumers().draw();
+                renderer.render(matrices, vertices, spell, light);
+            }
         });
 
         if (caster.debugLines != null) {
@@ -99,29 +110,31 @@ public class SpellEffectsRenderDispatcher implements SynchronousResourceReloader
     private void renderSpellDebugInfo(MatrixStack matrices, VertexConsumerProvider vertices, CasterState caster, int light) {
         matrices.push();
         matrices.multiply(client.getEntityRenderDispatcher().getRotation());
+
         float scale = 0.0125F;
-        int rotationMultiple = caster.living ? -1 : 1;
-        matrices.scale(rotationMultiple * scale, rotationMultiple * scale, scale);
+        int rotationMultiple = caster.living ? 1 : -1;
+        matrices.scale(scale, scale * rotationMultiple, scale * rotationMultiple);
         int backgroundColor = MinecraftClient.getInstance().options.getTextBackgroundColor(0.25F);
         int spacing = client.textRenderer.fontHeight + 1;
         int top = -(spacing * caster.debugLines.size());
         int left = (int)caster.entityState.width * 64;
 
+        Matrix4f transform = matrices.peek().getPositionMatrix();
         for (Text line : caster.debugLines) {
-            client.textRenderer.draw(line, left += 1, top += spacing, Colors.WHITE, false, matrices.peek().getPositionMatrix(), vertices, TextLayerType.POLYGON_OFFSET, backgroundColor, light);
+            client.textRenderer.draw(line, left += 1, top += spacing, Colors.WHITE, false, transform, vertices, TextLayerType.SEE_THROUGH, backgroundColor, light);
         }
         matrices.pop();
     }
 
     private void renderHotspot(MatrixStack matrices, VertexConsumerProvider vertices, CasterState caster) {
-        Box boundingBox = Box.of(caster.originVector, 1, 1, 1);
+        Box boundingBox = Box.of(Vec3d.ZERO, 0.5, 0.5, 0.5);
         VertexConsumer buffer = vertices.getBuffer(RenderLayer.getLines());
         Quaternionf rotation = new Quaternionf();
 
         for (float i = -1; i < 1; i += 0.2F) {
             matrices.push();
             float angle = i * caster.entityState.age * MathHelper.RADIANS_PER_DEGREE;
-            matrices.multiply(rotation.rotateXYZ(angle, angle, angle));
+            matrices.multiply(rotation.rotationXYZ(angle, angle - caster.yawOffset, angle));
             matrices.scale(i, i, i);
             VertexRendering.drawBox(matrices, buffer, boundingBox, 1, 0, 0, 1);
             matrices.pop();
