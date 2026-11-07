@@ -220,6 +220,12 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
     public void tick() {
         updatePassengers();
 
+        for (var passenger : List.copyOf(getPassengerList())) {
+            if (passenger instanceof PlayerEntity pl && pl.shouldDismount()) {
+                pl.dismountVehicle();
+            }
+        }
+
         setAir(getMaxAir());
         int boostTicks = getBoostTicks();
 
