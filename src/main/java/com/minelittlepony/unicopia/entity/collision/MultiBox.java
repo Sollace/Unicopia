@@ -33,6 +33,13 @@ public final class MultiBox extends Box {
         }
     }
 
+    public static List<Box> unbox(Box box, boolean colliding) {
+        if (box instanceof MultiBox m) {
+            return m.children.toList(colliding);
+        }
+        return colliding ? List.of(box) : List.of();
+    }
+
     private MultiBox(Box first, BoxChildren children) {
         super(first.minX, first.minY, first.minZ, first.maxX, first.maxY, first.maxZ);
         this.first = unbox(first);
@@ -179,13 +186,25 @@ public final class MultiBox extends Box {
             return false;
         }
 
-        public void forEach(Consumer<Box> consumer) {
+        public void forEachColliding(Consumer<Box> consumer) {
             for (int i = 0; i < children.length; i++) {
                 consumer.accept(children[i]);
             }
+        }
+
+        public void forEachNonColliding(Consumer<Box> consumer) {
             for (int i = 0; i < nonCollidingChildren.length; i++) {
                 consumer.accept(nonCollidingChildren[i]);
             }
+        }
+
+        public List<Box> toList(boolean colliding) {
+            return Arrays.asList(colliding ? children : nonCollidingChildren);
+        }
+
+        public void forEach(Consumer<Box> consumer) {
+            forEachColliding(consumer);
+            forEachNonColliding(consumer);
         }
 
         @Override

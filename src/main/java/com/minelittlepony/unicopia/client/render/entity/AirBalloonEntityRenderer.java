@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.client.render.entity;
 
+import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -55,8 +56,16 @@ public class AirBalloonEntityRenderer extends MobEntityRenderer<AirBalloonEntity
         matrices.pop();
 
         if (MinecraftClient.getInstance().getEntityRenderDispatcher().shouldRenderHitboxes() && !entity.invisible && !MinecraftClient.getInstance().hasReducedDebugInfo()) {
-            MultiBox.forEach(entity.boundingBox, box -> {
-                VertexRendering.drawBox(matrices, vertices.getBuffer(RenderLayer.getLines()), box.offset(entity.pos.multiply(-1)), 1, 1, 1, 1);
+            var buffer = vertices.getBuffer(RenderLayer.getLines());
+            var posOffset = entity.pos.multiply(-1);
+            entity.collissionBoxes.forEach(box -> {
+                VertexRendering.drawBox(matrices, buffer, box.offset(posOffset), 1, 1, 1, 1);
+            });
+            entity.interactionBoxes.forEach(box -> {
+                VertexRendering.drawBox(matrices, buffer, box.offset(posOffset), 0, 1, 0, 0.3F);
+            });
+            entity.gravityBoxes.forEach(box -> {
+                VertexRendering.drawBox(matrices, buffer, box.offset(posOffset), 1, 0, 0, 0.3F);
             });
         }
     }
@@ -78,7 +87,10 @@ public class AirBalloonEntityRenderer extends MobEntityRenderer<AirBalloonEntity
         state.hasBurner = entity.hasBurner();
         state.hasBalloon = entity.hasBalloon();
         state.isAscending = entity.isAscending();
-        state.boundingBox = entity.getBoundingBox();
+        Box box = entity.getBoundingBox();
+        state.collissionBoxes = MultiBox.unbox(box, true);
+        state.interactionBoxes = MultiBox.unbox(box, false);
+        state.gravityBoxes = entity.getGravityZoneBoxes();
         state.hasSoulFlame = entity.getStackInHand(Hand.MAIN_HAND).isOf(Items.SOUL_LANTERN);
         state.pos = entity.getPos();
         state.burnerWiggleProgress = entity.getBurner().getPullProgress(tickDelta);
@@ -120,7 +132,9 @@ public class AirBalloonEntityRenderer extends MobEntityRenderer<AirBalloonEntity
         public boolean hasBalloon;
         public boolean isAscending;
         public boolean hasSoulFlame;
-        public Box boundingBox;
+        public List<Box> collissionBoxes = List.of();
+        public List<Box> interactionBoxes = List.of();
+        public List<Box> gravityBoxes = List.of();
         public Vec3d pos;
 
         public float yaw;
