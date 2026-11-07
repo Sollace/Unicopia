@@ -344,17 +344,26 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
 
         super.tick();
 
-        if (!getWorld().isClient && this.velocityDirty) {
-            refreshPosition();
-        }
-
         prevXDelta = xDelta;
         prevZDelta = zDelta;
-        xDelta = getX() - lastX;
-        zDelta = getZ() - lastZ;
+        xDelta = 0;//getX() - lastX;
+        zDelta = 0;//getZ() - lastZ;
 
         movePassengers(getPos().subtract(lastPos));
         lastPos = getPos();
+    }
+
+    @Override
+    public void breakLongLeash() {
+        Entity holder = getLeashHolder();
+        float distance = distanceTo(holder);
+
+        if (distance > 60.0) {
+            detachLeash();
+        } else {
+            applyLeashElasticity(holder, distance);
+            limitFallDistance();
+        }
     }
 
     private void updatePassengers() {
@@ -625,12 +634,12 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
     @Override
     public List<Box> getGravityZoneBoxes() {
         Box mainBox = getBoundingBox();
-        Box balloon = getBalloonBoundingBox(mainBox).expand(0.001);
+        Box balloon = getBalloonBoundingBox(mainBox).expand(0.001).offset(-0.25, 0, 0);
         Box interior = getInteriorBoundingBox(mainBox).expand(0.001);
         if (hasBalloon() && getInflation(1) > 0.999F) {
             return List.of(
                     // interior - slim layer above the bottom of the basket
-                    interior.withMaxY(interior.maxY + 1.5).withMinY(interior.maxY - 2),
+                    interior.withMaxY(interior.maxY + 0.75).withMinY(interior.minY - 0.25),
                     // balloon - slim layer on top of the balloon
                     balloon.withMaxY(balloon.maxY + 0.5).withMinY(balloon.maxY - 2)
             );
