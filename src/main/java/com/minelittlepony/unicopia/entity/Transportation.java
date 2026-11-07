@@ -17,6 +17,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -35,19 +36,21 @@ public class Transportation<T extends Entity> implements Tickable {
 
     private final Stack<Boolean> inVehicleTick = new Stack<>();
 
+    private boolean wasNoGravity;
+
     public Transportation(T entity) {
         this.entity = entity;
     }
 
     public boolean hasVehicle() {
-        return vehicle != null;
+        return vehicle != null && !vehicle.isOnGround();
     }
 
     public boolean canTick() {
         if (entity instanceof PlayerEntity && vehicle == null) {
-            Unicopia.LOGGER.info(entity.age + " Normal player tick");
+            //Unicopia.LOGGER.info(entity.age + " Normal player tick");
         }
-        return vehicle == null || (!inVehicleTick.isEmpty() && inVehicleTick.pop());
+        return !hasVehicle() || (!inVehicleTick.isEmpty() && inVehicleTick.pop());
     }
 
     public boolean setVehicle(@Nullable FlyingVehicleEntity vehicle) {
@@ -59,11 +62,20 @@ public class Transportation<T extends Entity> implements Tickable {
             vehicle = null;
         }
         this.vehicle = vehicle;
+        // TODO: Figure out a better way of fixing this... I'm tired. I want to go to bed...
+        if (entity instanceof PlayerEntity) {
+            if (vehicle != null && !vehicle.isOnGround()) {
+                wasNoGravity = entity.hasNoGravity();
+                entity.setNoGravity(true);
+            } else {
+                entity.setNoGravity(wasNoGravity);
+            }
+        }
         groundBox = null;
         if (vehicle != null) {
-            Box entityBox = entity.getBoundingBox().expand(MathHelper.EPSILON);
+            Box box = entity.getBoundingBox().expand(MathHelper.EPSILON);
             for (var zone : vehicle.getBoundingBoxes(vehicle.getBoundingBox())) {
-                if (entityBox.intersects(zone)) {
+                if (box.intersects(zone)) {
                     groundBox = zone;
                     break;
                 }
@@ -87,26 +99,55 @@ public class Transportation<T extends Entity> implements Tickable {
     }
 
     public void move(Vec3d positionChange) {
-        entity.resetPosition();
+        if (!hasVehicle()) {
+            return;
+        }
         Vec3d newPos = entity.getPos().add(positionChange);
         if (groundBox != null) {
             newPos = new Vec3d(newPos.x, Math.max(newPos.y, groundBox.maxY), newPos.z);
         }
-        entity.setPosition(newPos);
+
+        entity.resetPosition();
+        entity.move(MovementType.SELF, newPos.subtract(entity.getPos()));
+        if (groundBox != null) {
+            Box entityBox = entity.getBoundingBox();
+            if (entityBox.minY < groundBox.maxY) {
+                entity.setPos(entity.getX(), groundBox.maxY, entity.getZ());
+            }
+        }
     }
 
     public void tickRiding() {
+        if (!hasVehicle()) {
+            return;
+        }
         int count = inVehicleTick.size();
         try {
             inVehicleTick.push(true);
+
             Vec3d pos = new Vec3d(entity.lastX, entity.lastY, entity.lastZ);
+
+            if (entity instanceof ServerPlayerEntity player) {
+                //player.networkHandler.syncWithPlayerPosition();
+                player.getServerWorld().getChunkManager().updatePosition(player);
+                //player.setMovement(Vec3d.ZERO);
+                Unicopia.LOGGER.info("Player Pos: " + entity.getPos().subtract(pos));
+            } else {
+
+            }
+            var oldPos = vehicle.getPos();
+            vehicle.setPos(0, -100, 0);
             InteractionManager.getInstance().tickEntity(entity);
+            vehicle.setPos(oldPos.x, oldPos.y, oldPos.z);
+
             if (groundBox != null) {
+                entity.setVelocity(entity.getVelocity().multiply(1, 0.3, 1));
                 Box entityBox = entity.getBoundingBox();
                 if (entityBox.minY < groundBox.maxY) {
-                    entity.setPos(entity.getX(), groundBox.maxY, entity.getZ());
-                    entity.setVelocity(entity.getVelocity().multiply(1, 0, 1));
-                    pos = new Vec3d(pos.x, Math.max(groundBox.maxY, pos.y), pos.z);
+                    entity.setPos(entity.getX(), groundBox.maxY + 0.001, entity.getZ());
+                }
+                if (entityBox.minY > groundBox.maxY) {
+                    entity.addVelocity(0, -0.001, 0);
                 }
             }
 
@@ -121,30 +162,46 @@ public class Transportation<T extends Entity> implements Tickable {
     }
 
     public void tickMovement() {
+        if (!hasVehicle()) {
+            return;
+        }
+        if (groundBox != null) {
+            Box entityBox = entity.getBoundingBox();
+            if (entityBox.minY < groundBox.maxY) {
+                entity.setPos(entity.getX(), groundBox.maxY + 0.001, entity.getZ());
+                entity.setVelocity(entity.getVelocity().multiply(1, 0, 1));
+            }
+        }
     }
 
     public Vec3d beforeMove(Vec3d velocity, MovementType movementType) {
-        if (vehicle == null) {
+        if (!hasVehicle()) {
             return velocity;
         }
-        if (groundBox != null && entity.getY() + velocity.y < groundBox.maxY) {
-            return new Vec3d(velocity.x, groundBox.maxY - entity.getBoundingBox().minY, velocity.z);
+
+        Box entityBox = entity.getBoundingBox();
+        if (groundBox != null && entityBox.minY + velocity.y < groundBox.maxY) {
+            return new Vec3d(velocity.x, groundBox.maxY - entityBox.minY, velocity.z);
         }
         return velocity;
     }
 
     public void afterMove(MovementType movementType) {
+        if (!hasVehicle()) {
+            return;
+        }
+
         if (groundBox != null) {
             Box entityBox = entity.getBoundingBox();
             if (entityBox.minY < groundBox.maxY) {
-                entity.setPos(entity.getX(), groundBox.maxY, entity.getZ());
+                entity.setPos(entity.getX(), groundBox.maxY + 0.001, entity.getZ());
                 entity.setVelocity(entity.getVelocity().multiply(1, 0, 1));
             }
         }
     }
 
     public Optional<BlockState> getSteppingState() {
-        if (hasVehicle()) {
+        if (vehicle != null) {
             setOnGround();
             return vehicle.getSteppingState(entity.getBoundingBox().expand(MathHelper.EPSILON));
         }

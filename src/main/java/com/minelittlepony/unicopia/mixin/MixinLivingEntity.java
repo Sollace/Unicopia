@@ -200,8 +200,8 @@ abstract class MixinLivingEntity extends Entity implements LivingEntityDuck {
         }
     }
 
-    @Inject(method = "tickMovement", at = @At("HEAD"))
-    public void beforeMovementTick(CallbackInfo info) {
+    @Inject(method = "tickMovement", at = @At("TAIL"))
+    public void afterMovementTick(CallbackInfo info) {
         Transportation.of(this).tickMovement();
     }
 

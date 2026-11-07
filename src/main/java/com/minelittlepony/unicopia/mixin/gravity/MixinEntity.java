@@ -15,6 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.minelittlepony.unicopia.entity.Equine;
+import com.minelittlepony.unicopia.entity.Transportation;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MovementType;
@@ -50,6 +51,9 @@ abstract class MixinEntity {
     private double modifyGravity(double initial) {
         if (this instanceof Equine.Container eq && !eq.get().asEntity().hasNoGravity()) {
             return eq.get().getPhysics().calcGravity(initial);
+        }
+        if (Transportation.of((Entity)(Object)this).hasVehicle()) {
+            return 0;
         }
         return initial;
     }
