@@ -85,7 +85,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     static final int INITIAL_SUN_IMMUNITY = 20;
 
     private final AbilityDispatcher powers = new AbilityDispatcher(this);
-    private final PlayerPhysics gravity = addTicker(new PlayerPhysics(this, tracker));
+    private final PlayerPhysics gravity = addTicker(new PlayerPhysics(tracker, this));
     private final PlayerCharmTracker charms = new PlayerCharmTracker(this);
     private final PlayerCamera camera = new PlayerCameraImpl(this);
     private final TraitDiscovery discoveries = new TraitDiscovery(this);
@@ -128,9 +128,9 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     private Entity lookedAtEntity;
     private int ticksUntilLookTimeout;
 
-    public Pony(PlayerEntity player) {
+    public Pony(EntityConvertable<PlayerEntity> player) {
         super(player);
-        trackers.addPacketEmitter((sender, initial) -> {
+        getDataTrackerManager().addPacketEmitter((sender, initial) -> {
             if (initial) {
                 sender.accept(Channel.SERVER_PLAYER_CAPABILITIES.toPacket(new MsgPlayerCapabilities(this, initial)));
             }
@@ -152,7 +152,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
     public void sendUpdatePacket() {
         if (entity instanceof ServerPlayerEntity pl && pl.networkHandler != null) {
-            Channel.SERVER_PLAYER_CAPABILITIES.sendToAllPlayers(new MsgPlayerCapabilities(this, false), entity.getWorld());
+            Channel.SERVER_PLAYER_CAPABILITIES.sendToAllPlayers(new MsgPlayerCapabilities(this, false), asWorld());
         }
     }
 
@@ -999,6 +999,9 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
     @Override
     public void copyFrom(Pony oldPlayer, boolean alive) {
+        if (isClient()) {
+            oldPlayer.getDataTrackerManager().copyTo(getDataTrackerManager());
+        }
         boolean forcedSwap = (!alive
                 && entity instanceof ServerPlayerEntity
                 && ((ServerWorld)entity.getWorld()).getGameRules().getBoolean(UGameRules.SWAP_TRIBE_ON_DEATH)
@@ -1061,10 +1064,9 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         return InteractionManager.getInstance().isClientPlayer(asEntity());
     }
 
-    @SuppressWarnings("unchecked")
     @Nullable
     public static Pony of(@Nullable PlayerEntity player) {
-        return player == null ? null : ((Container<Pony>)player).get();
+        return player == null ? null : ((Equine.Container)player).<Pony>get();
     }
 
     public static Stream<Pony> stream(Stream<Entity> entities) {

@@ -207,7 +207,7 @@ public class CasterState {
                 animationTime = pony.getAnimationProgress(tickDelta);
             }
 
-            if (caster instanceof Living l) {
+            if (caster instanceof Living<?> l) {
                 amulet.update(AmuletItem.get(l.asEntity()));
                 pegasusAmulet = AmuletSelectors.PEGASUS_AMULET.test(l.asEntity());
                 mainhandBangle.update(FriendshipBraceletItem.getWornBangles(l.asEntity(), TrinketsDelegate.MAIN_GLOVE).findFirst().orElse(TrinketsDelegate.EquippedStack.EMPTY));
@@ -221,7 +221,7 @@ public class CasterState {
                 gemYaw = l.asEntity().isSleeping() ? 0 : 180 - ((LivingEntityRenderState)this.entityState).bodyYaw;
             }
 
-            LivingEntity master = caster.getMaster();
+            @Nullable LivingEntity master = caster.getMaster();
             if (master != null) {
                 masterDisplayName = master.getDisplayName();
             }

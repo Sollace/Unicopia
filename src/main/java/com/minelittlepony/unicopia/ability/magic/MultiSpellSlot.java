@@ -10,9 +10,9 @@ import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellReference;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
+import com.minelittlepony.unicopia.network.track.DataTrackerManager;
 import com.minelittlepony.unicopia.network.track.MsgTrackedValues;
 import com.minelittlepony.unicopia.network.track.ObjectTracker;
-import com.minelittlepony.unicopia.network.track.Trackable;
 import com.minelittlepony.unicopia.network.track.TrackableObject;
 import com.minelittlepony.unicopia.network.track.MsgTrackedValues.TrackerEntries;
 import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
@@ -32,9 +32,9 @@ class MultiSpellSlot implements SpellSlots, NbtSerialisable {
     private final Caster<?> owner;
     private final ObjectTracker<Entry<Spell>> tracker;
 
-    public MultiSpellSlot(Caster<?> owner) {
+    public MultiSpellSlot(DataTrackerManager tracker, Caster<?> owner) {
         this.owner = owner;
-        this.tracker = Trackable.of(owner.asEntity()).getDataTrackers().checkoutTracker(() -> new Entry<>(owner));
+        this.tracker = tracker.checkoutTracker(() -> new Entry<>(owner));
     }
 
     public ObjectTracker<?> getTracker() {

@@ -5,29 +5,29 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import com.google.common.base.Suppliers;
+import com.minelittlepony.unicopia.EntityConvertable;
 import com.minelittlepony.unicopia.network.Channel;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import net.minecraft.entity.Entity;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 public class DataTrackerManager {
-    private final Entity entity;
-    private final DynamicRegistryManager lookup;
-    final boolean isClient;
+    private final EntityConvertable<?> entity;
+    private final Supplier<DynamicRegistryManager> registries;
+
     private final List<DataTracker> trackers = new ObjectArrayList<>();
     private final List<ObjectTracker<?>> objectTrackers = new ObjectArrayList<>();
     private final List<PacketEmitter> packetEmitters = new ObjectArrayList<>();
 
     private DataTracker primaryTracker;
 
-    public DataTrackerManager(Entity entity) {
+    public DataTrackerManager(EntityConvertable<?> entity) {
         this.entity = entity;
-        this.lookup = entity.getWorld().getRegistryManager();
-        this.isClient = entity.getWorld().isClient;
+        this.registries = Suppliers.memoize(() -> entity.asWorld().getRegistryManager());
         this.primaryTracker = checkoutTracker();
     }
 
@@ -43,10 +43,10 @@ public class DataTrackerManager {
         DataTracker tracker = new DataTracker(trackers.size());
         trackers.add(tracker);
         packetEmitters.add((sender, initial) -> {
-            var update = initial ? tracker.getInitialPairs(lookup) : tracker.getDirtyPairs(lookup);
+            var update = initial ? tracker.getInitialPairs(registries.get()) : tracker.getDirtyPairs(registries.get());
             if (update.isPresent()) {
                 sender.accept(Channel.SERVER_TRACKED_ENTITY_DATA.toPacket(new MsgTrackedValues(
-                        entity.getId(),
+                        entity.asEntity().getId(),
                         Optional.empty(),
                         update
                 )));
@@ -59,10 +59,10 @@ public class DataTrackerManager {
         ObjectTracker<T> tracker = new ObjectTracker<>(objectTrackers.size(), objFunction);
         objectTrackers.add(tracker);
         packetEmitters.add((sender, initial) -> {
-            var update = initial ? tracker.getInitialPairs(lookup) : tracker.getDirtyPairs(lookup);
+            var update = initial ? tracker.getInitialPairs(registries.get()) : tracker.getDirtyPairs(registries.get());
             if (update.isPresent()) {
                 sender.accept(Channel.SERVER_TRACKED_ENTITY_DATA.toPacket(new MsgTrackedValues(
-                        entity.getId(),
+                        entity.asEntity().getId(),
                         update,
                         Optional.empty()
                 )));
@@ -102,13 +102,13 @@ public class DataTrackerManager {
         packet.updatedTrackers().ifPresent(update -> {
             DataTracker tracker = trackers.get(update.id());
             if (tracker != null) {
-                tracker.load(update, lookup);
+                tracker.load(update, registries.get());
             }
         });
         packet.updatedObjects().ifPresent(update -> {
             ObjectTracker<?> tracker = objectTrackers.get(update.id());
             if (tracker != null) {
-                tracker.load(update, lookup);
+                tracker.load(update, registries.get());
             }
         });
     }

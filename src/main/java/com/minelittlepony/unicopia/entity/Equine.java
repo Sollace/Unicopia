@@ -16,7 +16,8 @@ import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
 import net.minecraft.entity.Entity;
 
 public interface Equine<T extends Entity> extends NbtSerialisable, Tickable, ProjectileImpactListener, EntityConvertable<T>, EquineContext {
-    Physics getPhysics();
+
+    Transportation getTransportation();
 
     void setSpecies(Race race);
 
@@ -25,25 +26,29 @@ public interface Equine<T extends Entity> extends NbtSerialisable, Tickable, Pro
      */
     boolean beforeUpdate();
 
-    @SuppressWarnings("unchecked")
     static <E extends Entity, T extends Equine<? extends E>> Optional<T> of(@Nullable E entity) {
-        return entity instanceof Container ? Optional.of(((Container<T>)entity).get()) : Optional.empty();
+        return entity instanceof Container c ? Optional.of(c.get()) : Optional.empty();
     }
 
-    @SuppressWarnings("unchecked")
     static <E extends Entity, T> Optional<T> of(@Nullable E entity, Predicate<Object> typeCheck) {
-        return entity instanceof Container
-                ? (Optional<T>)Optional.of((Object)((Container<?>)entity).get()).filter(typeCheck)
+        return entity instanceof Equine.Container c
+                ? Optional.of(c.get()).filter(typeCheck).map(Untyped::cast)
                 : Optional.empty();
     }
 
-    static <E extends Entity, T extends Equine<? extends E>> Container<T> cast(@Nullable E entity) {
-        return entity instanceof Container c ? Untyped.cast(c) : null;
+    static <E extends Entity, T extends Equine<E>> @Nullable T cast(@Nullable E entity, Predicate<Object> typeCheck) {
+        return entity instanceof Equine.Container c && typeCheck.test(c.get())
+                ? Untyped.cast(c.<Equine<E>>get())
+                : null;
     }
 
-    interface Container<T extends Equine<?>> {
+    static <T extends Equine<? extends Entity>> @Nullable T cast(@Nullable Entity entity) {
+        return entity instanceof Container c ? c.<T>get() : null;
+    }
+
+    interface Container {
         Equine<?> create();
 
-        T get();
+        <T extends Equine<?>> T get();
     }
 }

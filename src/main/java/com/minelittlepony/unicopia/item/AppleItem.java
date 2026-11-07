@@ -2,6 +2,8 @@ package com.minelittlepony.unicopia.item;
 
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.entity.IItemEntity;
+import com.minelittlepony.unicopia.entity.ItemImpl;
+
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.SpawnReason;
@@ -19,7 +21,7 @@ public interface AppleItem {
     }
 
     private static ActionResult onGroundTick(IItemEntity item) {
-        ItemEntity entity = item.get().asEntity();
+        ItemEntity entity = item.<ItemImpl>get().asEntity();
 
         if (!entity.isRemoved() && item.getPickupDelay() == 0 && item.getAge() > 2030 && entity.getWorld().random.nextInt(150) < 10) {
 

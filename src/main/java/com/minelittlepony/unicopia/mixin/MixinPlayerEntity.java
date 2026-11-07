@@ -12,6 +12,7 @@ import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.entity.Equine;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.util.Untyped;
 import com.minelittlepony.unicopia.util.annotation.CaptureArg;
 import com.mojang.datafixers.util.Either;
 
@@ -36,7 +37,7 @@ abstract class MixinPlayerEntity extends LivingEntity implements PlayerEntityDuc
 
     @Override
     public Equine<?> create() {
-        return new Pony((PlayerEntity)(Object)this);
+        return new Pony(Untyped.cast(this));
     }
 
     @ModifyReturnValue(method = "createPlayerAttributes()Lnet/minecraft/entity/attribute/DefaultAttributeContainer$Builder;", at = @At("RETURN"))
@@ -47,13 +48,13 @@ abstract class MixinPlayerEntity extends LivingEntity implements PlayerEntityDuc
 
     @ModifyVariable(method = "applyDamage(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/entity/damage/DamageSource;F)V", at = @At("HEAD"), ordinal = 0, argsOnly = true)
     protected float modifyDamageAmount(float amount, @CaptureArg ServerWorld world, @CaptureArg DamageSource source) {
-        return get().modifyDamage(source, amount).orElse(amount);
+        return this.<Pony>get().modifyDamage(source, amount).orElse(amount);
     }
 
     @Inject(method = "trySleep(Lnet/minecraft/util/math/BlockPos;)Lcom/mojang/datafixers/util/Either;", at = @At("HEAD"), cancellable = true)
     private void onTrySleep(BlockPos pos, CallbackInfoReturnable<Either<PlayerEntity.SleepFailureReason, Unit>> info) {
         if (!getWorld().isClient) {
-            get().trySleep(pos).ifPresent(reason -> {
+            this.<Pony>get().trySleep(pos).ifPresent(reason -> {
                 ((PlayerEntity)(Object)this).sendMessage(reason, true);
                 info.setReturnValue(Either.left(ServerPlayerEntity.SleepFailureReason.OTHER_PROBLEM));
             });
@@ -62,12 +63,12 @@ abstract class MixinPlayerEntity extends LivingEntity implements PlayerEntityDuc
 
     @ModifyReturnValue(method = "getBaseDimensions(Lnet/minecraft/entity/EntityPose;)Lnet/minecraft/entity/EntityDimensions;", at = @At("RETURN"))
     private EntityDimensions modifyEyeHeight(EntityDimensions dimensions, EntityPose pose) {
-        return get().getMotion().getDimensions().calculateDimensions(dimensions);
+        return this.<Pony>get().getMotion().getDimensions().calculateDimensions(dimensions);
     }
 
     @ModifyReturnValue(method = "getBlockBreakingSpeed(Lnet/minecraft/block/BlockState;)F", at = @At("RETURN"))
     private float onGetBlockBreakingSpeed(float speed, BlockState state) {
-        return speed * get().getBlockBreakingSpeed();
+        return speed * this.<Pony>get().getBlockBreakingSpeed();
     }
 
     @Override

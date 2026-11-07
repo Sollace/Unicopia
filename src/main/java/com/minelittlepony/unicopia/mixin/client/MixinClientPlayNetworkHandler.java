@@ -12,8 +12,6 @@ import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.behaviour.Disguise;
 import com.minelittlepony.unicopia.entity.behaviour.EntityAppearance;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.minelittlepony.unicopia.network.track.Trackable;
-
 import net.minecraft.client.network.ClientCommonNetworkHandler;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -52,7 +50,6 @@ abstract class MixinClientPlayNetworkHandler extends ClientCommonNetworkHandler 
     @Inject(method = "onPlayerRespawn", at = @At("RETURN"))
     public void afterOnPlayerRespawn(PlayerRespawnS2CPacket packet, CallbackInfo info) {
         if (oldPlayer != null && oldPlayer != client.player) {
-            Trackable.of(oldPlayer).getDataTrackers().copyTo(Trackable.of(client.player).getDataTrackers());
             Pony.of(client.player).copyFrom(Pony.of(oldPlayer), true);
         }
     }

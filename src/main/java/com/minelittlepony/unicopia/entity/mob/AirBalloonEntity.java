@@ -44,6 +44,7 @@ import java.util.stream.Stream;
 import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.advancement.UCriteria;
+import com.minelittlepony.unicopia.entity.Equine;
 import com.minelittlepony.unicopia.entity.Transportation;
 import com.minelittlepony.unicopia.entity.collision.EntityCollisions;
 import com.minelittlepony.unicopia.entity.collision.MultiBox;
@@ -92,7 +93,7 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
     private double prevZDelta;
     private double zDelta;
 
-    private List<Transportation<Entity>> passengers = List.of();
+    private List<Transportation> passengers = List.of();
 
     public AirBalloonEntity(EntityType<? extends AirBalloonEntity> type, World world) {
         super(type, world);
@@ -377,7 +378,7 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
         this.passengers = getCollidingEntities(getGravityZoneBoxes().stream()).entrySet().stream()
                 .flatMap(entry -> entry.getValue().stream())
                 .distinct()
-                .map(Transportation::of)
+                .map(entity -> Equine.cast(entity).getTransportation())
                 .filter(passenger -> passenger.setVehicle(this))
                 .toList();
     }

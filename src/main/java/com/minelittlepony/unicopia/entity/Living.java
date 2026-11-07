@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.stream.Stream;
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.EntityConvertable;
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.UTags;
@@ -35,8 +36,6 @@ import com.minelittlepony.unicopia.item.component.BreaksIntoItemComponent;
 import com.minelittlepony.unicopia.item.component.UDataComponentTypes;
 import com.minelittlepony.unicopia.item.enchantment.EnchantmentUtil;
 import com.minelittlepony.unicopia.network.track.DataTracker;
-import com.minelittlepony.unicopia.network.track.DataTrackerManager;
-import com.minelittlepony.unicopia.network.track.Trackable;
 import com.minelittlepony.unicopia.network.track.TrackableDataType;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.projectile.ProjectileImpactListener;
@@ -81,9 +80,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
-public abstract class Living<T extends LivingEntity> implements Equine<T>, Caster<T>, AttributeContainer {
-    protected final T entity;
-
+public abstract class Living<T extends LivingEntity> extends BaseEquine<T> implements Caster<T>, AttributeContainer, Physics.Source {
     private final SpellInventory spells;
 
     private final Interactable sneakingHeuristic;
@@ -99,37 +96,27 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
     private Optional<Living<?>> target = Optional.empty();
 
-
     private int invinsibilityTicks;
-
-    private final List<Tickable> tickers = new ArrayList<>();
 
     private final LandingEventHandler landEvent = addTicker(new LandingEventHandler(this));
     private final NbtMap<Identifier, Float> enchants = NbtMap.of(Identifier.CODEC, Codec.FLOAT);
     private final ItemTracker armour = addTicker(new ItemTracker(this));
 
-    protected final DataTrackerManager trackers;
     protected final DataTracker tracker;
 
     private final DataTracker.Entry<Integer> invulnerableTicks;
     protected final DataTracker.Entry<Optional<UUID>> carrierId;
 
-    protected Living(T entity) {
-        this.entity = entity;
-        this.trackers = Trackable.of(entity).getDataTrackers();
-        this.tracker = trackers.getPrimaryTracker();
-        this.spells = SpellSlots.ofUnbounded(this);
-        this.sneakingHeuristic = addTicker(new Interactable(entity::isSneaking));
-        this.landedHeuristic = addTicker(new Interactable(entity::isOnGround));
-        this.jumpingHeuristic = addTicker(new Interactable(((LivingEntityDuck)entity)::isJumping));
+    protected Living(EntityConvertable<T> entity) {
+        super(entity);
+        this.tracker = getDataTrackerManager().getPrimaryTracker();
+        this.spells = SpellSlots.ofUnbounded(getDataTrackerManager(), this);
+        this.sneakingHeuristic = addTicker(new Interactable(this.entity::isSneaking));
+        this.landedHeuristic = addTicker(new Interactable(this.entity::isOnGround));
+        this.jumpingHeuristic = addTicker(new Interactable(((LivingEntityDuck)this.entity)::isJumping));
 
         carrierId = tracker.startTracking(TrackableDataType.UUID, Optional.empty());
         invulnerableTicks = tracker.startTracking(TrackableDataType.INT, -1);
-    }
-
-    public <Q extends Tickable> Q addTicker(Q tickable) {
-        tickers.add(Objects.requireNonNull(tickable, "tickable cannot be null"));
-        return tickable;
     }
 
     public int getInvulnerabilityTicks() {
@@ -181,11 +168,6 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         return armour;
     }
 
-    @Override
-    public final T asEntity() {
-        return entity;
-    }
-
     public Optional<UUID> getCarrierId() {
         return carrierId.get();
     }
@@ -230,7 +212,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
     @Override
     public void tick() {
-        tickers.forEach(Tickable::tick);
+        super.tick();
         spells.tick(Situation.BODY);
 
         if (!(entity instanceof PlayerEntity)) {
@@ -271,7 +253,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
             InteractionManager.getInstance().playLoopingSound(entity, InteractionManager.SOUND_GEM_FINDING_MAGIC_HUM, 0);
         }
 
-        Transportation.of(entity).tick();
+
     }
 
     @Override
@@ -489,9 +471,11 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     public void onDropItem(ItemEntity itemDropped) {
         Equine.of(itemDropped).ifPresent(eq -> {
             eq.setSpecies(getSpecies());
-            eq.getPhysics().setBaseGravityModifier(getPhysics().getPersistantGravityModifier());
-            if (eq.getPhysics().isGravityNegative()) {
-                eq.asEntity().setVelocity(eq.asEntity().getVelocity().multiply(1, -1, 1));
+            if (eq instanceof Physics.Source source) {
+                source.getPhysics().setBaseGravityModifier(getPhysics().getPersistantGravityModifier());
+                if (source.getPhysics().isGravityNegative()) {
+                    eq.asEntity().setVelocity(eq.asEntity().getVelocity().multiply(1, -1, 1));
+                }
             }
         });
     }

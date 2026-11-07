@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.minelittlepony.unicopia.entity.Equine;
-import com.minelittlepony.unicopia.entity.Living;
+import com.minelittlepony.unicopia.entity.Physics;
 import com.minelittlepony.unicopia.entity.duck.RotatedView;
 
 import net.minecraft.entity.LivingEntity;
@@ -18,9 +18,7 @@ abstract class MixinBrain<E extends LivingEntity> {
 
     @Inject(method = "tick", at = @At("HEAD"))
     public void beforeTickAi(ServerWorld world, E entity, CallbackInfo into) {
-        Equine<?> eq = Equine.of(entity).orElse(null);
-
-        if (eq instanceof Living<?> && eq.getPhysics().isGravityNegative()) {
+        if (Equine.cast(entity) instanceof Physics.Source s && s.getPhysics().isGravityNegative()) {
             ((RotatedView)world).pushRotation((int)(entity.getY() + entity.getHeight() * 0.5F));
         }
     }

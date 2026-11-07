@@ -35,12 +35,11 @@ public interface Caster<E extends Entity> extends
         Owned<LivingEntity>,
         Levelled,
         Affine,
+        Physics.Source,
         ParticleSource<E>,
         SoundEmitter<E>,
         EntityConvertable<E>,
         UDamageSources {
-
-    Physics getPhysics();
 
     SpellSlots getSpellSlot();
 

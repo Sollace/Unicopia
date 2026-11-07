@@ -13,6 +13,7 @@ import com.minelittlepony.unicopia.entity.Creature;
 import com.minelittlepony.unicopia.entity.Equine;
 import com.minelittlepony.unicopia.entity.ItemImpl;
 import com.minelittlepony.unicopia.entity.Living;
+import com.minelittlepony.unicopia.entity.Physics;
 import com.minelittlepony.unicopia.entity.behaviour.Disguise;
 import com.minelittlepony.unicopia.entity.duck.LavaAffine;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -84,7 +85,7 @@ public class WorldRenderDelegate {
             VertexConsumerProvider vertices,
             int light) {
         @Nullable final Equine<?> equine = Equine.of(entity).orElse(null);
-        @Nullable final Entity flippedEntity = equine != null && equine.getPhysics().isGravityNegative() ? entity : null;
+        @Nullable final Entity flippedEntity = equine instanceof Physics.Source source && source.getPhysics().isGravityNegative() ? entity : null;
 
         matrices.push();
 
@@ -169,7 +170,7 @@ public class WorldRenderDelegate {
             matrices.multiply(new Quaternionf()
                     .rotationZYX(0, MathHelper.HALF_PI, sidewaysRoll * MathHelper.RADIANS_PER_DEGREE)
                     .rotateZYX(0, -MathHelper.HALF_PI, forwardPitch * MathHelper.RADIANS_PER_DEGREE), (float)x, (float)y + entity.getHeight() / 2, (float)z);
-        } else if (equine.getPhysics().isGravityNegative()) {
+        } else if (equine instanceof Physics.Source source && source.getPhysics().isGravityNegative()) {
             matrices.multiply(RotationAxis.POSITIVE_X.rotation(MathHelper.PI), (float)x, (float)y + entity.getHeight() / 2, (float)z);
         }
     }

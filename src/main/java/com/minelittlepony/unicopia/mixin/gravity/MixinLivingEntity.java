@@ -9,7 +9,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 
 @Mixin(LivingEntity.class)
-abstract class MixinLivingEntity extends Entity implements Equine.Container<Living<?>> {
+abstract class MixinLivingEntity extends Entity implements Equine.Container {
     private MixinLivingEntity() { super(null, null); }
 
     @ModifyArg(method = "fall",
@@ -17,6 +17,6 @@ abstract class MixinLivingEntity extends Entity implements Equine.Container<Livi
                 target = "net/minecraft/server/world/ServerWorld.spawnParticles(Lnet/minecraft/particle/ParticleEffect;DDDIDDDD)I"),
             index = 2)
     private double modifyParticleY(double y) {
-        return get().getPhysics().isGravityNegative() ? y + getHeight() : y;
+        return get() instanceof Physics.Source s  && s.getPhysics().isGravityNegative() ? y + getHeight() : y;
     }
 }

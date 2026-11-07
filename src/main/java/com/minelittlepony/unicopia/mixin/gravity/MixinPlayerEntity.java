@@ -6,18 +6,18 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.sugar.Local;
-import com.minelittlepony.unicopia.entity.Equine;
+import com.minelittlepony.unicopia.entity.duck.PlayerEntityDuck;
+import com.minelittlepony.unicopia.entity.player.Pony;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 
 @Mixin(PlayerEntity.class)
-abstract class MixinPlayerEntity {
+abstract class MixinPlayerEntity implements PlayerEntityDuck {
     @ModifyVariable(method = "adjustMovementForSneaking", at = @At("HEAD"), argsOnly = true)
     private Vec3d flipMovementForSneaking(Vec3d movement) {
-        if (this instanceof Equine.Container eq && eq.get().getPhysics().isGravityNegative()) {
+        if (this.<Pony>get().getPhysics().isGravityNegative()) {
             return movement.multiply(1, -1, 1);
         }
         return movement;
@@ -25,7 +25,7 @@ abstract class MixinPlayerEntity {
 
     @ModifyReturnValue(method = "adjustMovementForSneaking", at = @At("RETURN"))
     private Vec3d unflipMovementForSneaking(Vec3d result) {
-        if (this instanceof Equine.Container eq && eq.get().getPhysics().isGravityNegative()) {
+        if (this.<Pony>get().getPhysics().isGravityNegative()) {
             return result.multiply(1, -1, 1);
         }
         return result;
@@ -35,8 +35,8 @@ abstract class MixinPlayerEntity {
             at = @At(value = "INVOKE", target = "net/minecraft/util/math/Box.<init>(DDDDDD)V"),
             index = 1)
     private double invertStepHeightCheckBoxBottom(double bottom) {
-        if (this instanceof Equine.Container eq && eq.get().getPhysics().isGravityNegative()) {
-            return eq.get().asEntity().getBoundingBox().maxY;
+        if (this.<Pony>get().getPhysics().isGravityNegative()) {
+            return getBoundingBox().maxY;
         }
         return bottom;
     }
@@ -45,8 +45,8 @@ abstract class MixinPlayerEntity {
             at = @At(value = "INVOKE", target = "net/minecraft/util/math/Box.<init>(DDDDDD)V"),
             index = 4)
     private double invertStepHeightCheckBoxTop(double top, @Local(argsOnly = true, ordinal = 2) double stepHeight) {
-        if (this instanceof Equine.Container eq && eq.get().getPhysics().isGravityNegative()) {
-            return eq.get().asEntity().getBoundingBox().maxY + stepHeight + 1.0E-5F;
+        if (this.<Pony>get().getPhysics().isGravityNegative()) {
+            return asEntity().getBoundingBox().maxY + stepHeight + 1.0E-5F;
         }
         return top;
     }
@@ -55,9 +55,8 @@ abstract class MixinPlayerEntity {
             at = @At(value = "INVOKE",
                 target = "net/minecraft/world/World.isSpaceEmpty(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/Box;)Z"))
     private Box unicopiaReAnchorBoundingBox(Box box) {
-        if (this instanceof Equine.Container eq && eq.get().getPhysics().isGravityNegative()) {
-            Entity self = eq.get().asEntity();
-            Box oldBox = self.getBoundingBox();
+        if (this.<Pony>get().getPhysics().isGravityNegative()) {
+            Box oldBox = getBoundingBox();
             double newHeight = box.getLengthY();
             if (newHeight > oldBox.getLengthY()) {
                 double targetMaxY = oldBox.maxY;

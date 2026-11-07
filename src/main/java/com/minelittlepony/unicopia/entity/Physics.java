@@ -2,6 +2,8 @@ package com.minelittlepony.unicopia.entity;
 
 import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
 
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
@@ -9,19 +11,39 @@ import net.minecraft.util.math.Vec3d;
 public interface Physics extends NbtSerialisable {
     float DEFAULT_GRAVITY_FACTOR = 1;
 
-    double calcGravity(double worldConstant);
+    default double calcGravity(double worldConstant) {
+        return worldConstant;
+    }
 
     Vec3d getMotionAngle();
 
-    float getGravityModifier();
+    @Override
+    default void toNBT(NbtCompound compound, WrapperLookup lookup) {
+    }
 
-    float getPersistantGravityModifier();
+    @Override
+    default void fromNBT(NbtCompound compound, WrapperLookup lookup) {
+    }
 
-    float getBaseGravityModifier();
+    default float getGravityModifier() {
+        return DEFAULT_GRAVITY_FACTOR;
+    }
 
-    void setBaseGravityModifier(float constant);
+    default float getPersistantGravityModifier() {
+        return DEFAULT_GRAVITY_FACTOR;
+    }
 
-    boolean isFlying();
+    default float getBaseGravityModifier() {
+        return DEFAULT_GRAVITY_FACTOR;
+    }
+
+    default void setBaseGravityModifier(float constant) {
+
+    }
+
+    default boolean isFlying() {
+        return false;
+    }
 
     BlockPos getHeadPosition();
 
@@ -38,4 +60,8 @@ public interface Physics extends NbtSerialisable {
     }
 
     Box getBoxAtPosition(Vec3d pos, boolean inverted);
+
+    interface Source {
+        Physics getPhysics();
+    }
 }

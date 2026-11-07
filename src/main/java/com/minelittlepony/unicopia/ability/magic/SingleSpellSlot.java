@@ -6,7 +6,7 @@ import java.util.stream.Stream;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
-import com.minelittlepony.unicopia.network.track.Trackable;
+import com.minelittlepony.unicopia.network.track.DataTrackerManager;
 import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
 
 import net.minecraft.nbt.NbtCompound;
@@ -21,10 +21,10 @@ class SingleSpellSlot implements SpellSlots, NbtSerialisable {
     private final Caster<?> owner;
     private final MultiSpellSlot.Entry<Spell> entry;
 
-    public SingleSpellSlot(Caster<?> owner) {
+    public SingleSpellSlot(DataTrackerManager tracker, Caster<?> owner) {
         this.owner = owner;
         this.entry = new MultiSpellSlot.Entry<>(owner);
-        Trackable.of(owner.asEntity()).getDataTrackers().getPrimaryTracker().startTracking(entry);
+        tracker.getPrimaryTracker().startTracking(entry);
     }
 
     @Override

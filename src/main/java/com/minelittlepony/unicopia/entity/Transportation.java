@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.include.com.google.common.base.Preconditions;
 
+import com.minelittlepony.unicopia.EntityConvertable;
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.advancement.UCriteria;
@@ -22,8 +23,8 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
-public class Transportation<T extends Entity> implements Tickable {
-    private final T entity;
+public class Transportation implements Tickable {
+    private final Entity entity;
 
     @Nullable
     private UUID lastVehicleUuid;
@@ -38,8 +39,8 @@ public class Transportation<T extends Entity> implements Tickable {
 
     private boolean wasNoGravity;
 
-    public Transportation(T entity) {
-        this.entity = entity;
+    public Transportation(EntityConvertable<?> entity) {
+        this.entity = entity.asEntity();
     }
 
     public boolean hasVehicle() {
@@ -214,14 +215,5 @@ public class Transportation<T extends Entity> implements Tickable {
         entity.onLanding();
         entity.verticalCollision = true;
         entity.groundCollision = entity.getVelocity().getY() < 0;
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T extends Entity> Transportation<T> of(T entity) {
-        return ((Holder<T>)entity).get();
-    }
-
-    public interface Holder<T extends Entity> {
-        Transportation<T> get();
     }
 }

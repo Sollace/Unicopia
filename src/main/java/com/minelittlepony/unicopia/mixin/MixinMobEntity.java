@@ -19,7 +19,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
 @Mixin(MobEntity.class)
-abstract class MixinMobEntity extends LivingEntity implements Equine.Container<Creature> {
+abstract class MixinMobEntity extends LivingEntity implements Equine.Container {
     private MixinMobEntity() { super(null, null); }
 
     @Shadow
@@ -29,7 +29,7 @@ abstract class MixinMobEntity extends LivingEntity implements Equine.Container<C
 
     @Inject(method = "<init>(Lnet/minecraft/entity/EntityType;Lnet/minecraft/world/World;)V", at = @At("RETURN"))
     private void init(EntityType<? extends MobEntity> entityType, World world, CallbackInfo info) {
-        get().initAi(goalSelector, targetSelector);
+        this.<Creature>get().initAi(goalSelector, targetSelector);
     }
 
     @Inject(method = "prefersNewEquipment(Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/EquipmentSlot;)Z",

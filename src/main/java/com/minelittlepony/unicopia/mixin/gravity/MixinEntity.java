@@ -15,7 +15,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.minelittlepony.unicopia.entity.Equine;
-import com.minelittlepony.unicopia.entity.Transportation;
+import com.minelittlepony.unicopia.entity.Physics;
+import com.minelittlepony.unicopia.entity.duck.EntityDuck;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MovementType;
@@ -24,14 +25,14 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 
 @Mixin(value = Entity.class, priority = 29000)
-abstract class MixinEntity {
+abstract class MixinEntity implements EntityDuck {
     @Shadow
     private BlockPos blockPos;
 
     @Inject(method = "getFinalGravity", at = @At("RETURN"), cancellable = true)
     private void modifyGravity(CallbackInfoReturnable<Double> info) {
-        if (this instanceof Equine.Container eq) {
-            info.setReturnValue(Math.abs(eq.get().getPhysics().calcGravity(info.getReturnValue())));
+        if (get() instanceof Physics.Source source) {
+            info.setReturnValue(Math.abs(source.getPhysics().calcGravity(info.getReturnValue())));
         }
     }
 
@@ -42,26 +43,31 @@ abstract class MixinEntity {
             shift = Shift.AFTER,
             ordinal = 0))
     private void onUpdateBlockPos(double x, double y, double z, CallbackInfo info) {
-        if (this instanceof Equine.Container eq && eq.get().getPhysics().isGravityNegative()) {
-            blockPos = eq.get().getPhysics().getHeadPosition();
+        if (get() instanceof Physics.Source source && source.getPhysics().isGravityNegative()) {
+            blockPos = source.getPhysics().getHeadPosition();
         }
     }
 
     @ModifyReturnValue(method = "getFinalGravity()D", at = @At("RETURN"))
     private double modifyGravity(double initial) {
-        if (this instanceof Equine.Container eq && !eq.get().asEntity().hasNoGravity()) {
-            return eq.get().getPhysics().calcGravity(initial);
+        if (asEntity().hasNoGravity()) {
+            return initial;
         }
-        if (Transportation.of((Entity)(Object)this).hasVehicle()) {
+        Equine<?> eq = get();
+        if (eq.getTransportation().hasVehicle()) {
             return 0;
         }
+        if (eq instanceof Physics.Source source) {
+            return source.getPhysics().calcGravity(initial);
+        }
+
         return initial;
     }
 
     @ModifyReturnValue(method = "getBlockPos", at = @At("RETURN"))
     private BlockPos invertBlockPos(BlockPos pos) {
-        if (this instanceof Equine.Container eq && eq.get().getPhysics().isGravityNegative()) {
-            return eq.get().getPhysics().getHeadPosition();
+        if (get() instanceof Physics.Source source && source.getPhysics().isGravityNegative()) {
+            return source.getPhysics().getHeadPosition();
         }
         return pos;
     }
@@ -119,7 +125,7 @@ abstract class MixinEntity {
             at = @At("HEAD"),
             argsOnly = true)
     private static Vec3d modifyMovementForStepheight(Vec3d movement, @Nullable Entity entity) {
-        if (entity instanceof Equine.Container eq && eq.get().getPhysics().isGravityNegative() && movement.getY() == entity.getStepHeight()) {
+        if (Equine.cast(entity) instanceof Physics.Source source && source.getPhysics().isGravityNegative() && movement.getY() == entity.getStepHeight()) {
             return movement.multiply(1, -1, 1);
         }
         return movement;
@@ -146,6 +152,6 @@ abstract class MixinEntity {
 
     @Unique
     private boolean unicopiaIsGravityInverted() {
-        return this instanceof Equine.Container eq && eq.get().getPhysics().isGravityNegative();
+        return get() instanceof Physics.Source source && source.getPhysics().isGravityNegative();
     }
 }

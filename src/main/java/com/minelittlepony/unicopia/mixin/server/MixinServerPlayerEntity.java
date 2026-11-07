@@ -29,17 +29,16 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 
 @Mixin(ServerPlayerEntity.class)
-abstract class MixinServerPlayerEntity extends PlayerEntity implements ScreenHandlerListener, Equine.Container<Pony>, ServerPlayerEntityDuck {
+abstract class MixinServerPlayerEntity extends PlayerEntity implements ScreenHandlerListener, ServerPlayerEntityDuck {
     MixinServerPlayerEntity() {super(null, null, 0, null);}
 
     @Override
     @Accessor("inTeleportationState")
     public abstract void setPreventMotionChecks(boolean enabled);
 
-    @SuppressWarnings("unchecked")
     @Inject(method = "copyFrom(Lnet/minecraft/server/network/ServerPlayerEntity;Z)V", at = @At("HEAD"))
     private void onCopyFrom(ServerPlayerEntity oldPlayer, boolean alive, CallbackInfo info) {
-        get().copyFrom(((Equine.Container<Pony>)oldPlayer).get(), alive);
+        this.<Pony>get().copyFrom(Equine.cast(oldPlayer), alive);
     }
 
     @Inject(method = {
@@ -52,7 +51,7 @@ abstract class MixinServerPlayerEntity extends PlayerEntity implements ScreenHan
     ), cancellable = true, require = 0)
     private void onTrySleep(BlockPos pos, CallbackInfoReturnable<Either<PlayerEntity.SleepFailureReason, Unit>> info) {
         // Day/Night check is overriden using EntitySleepEvents.ALLOW_SLEEP_TIME in NocturnalSleepManager
-        if (get().canSleepNow(getWorld().isDay()) == ActionResult.FAIL) {
+        if (this.<Pony>get().canSleepNow(getWorld().isDay()) == ActionResult.FAIL) {
             this.sendMessage(Text.translatable("block.unicopia.bed.no_sleep.nocturnal"), true);
 
             info.setReturnValue(Either.left(PlayerEntity.SleepFailureReason.OTHER_PROBLEM));
@@ -62,12 +61,12 @@ abstract class MixinServerPlayerEntity extends PlayerEntity implements ScreenHan
     @Inject(method = "updateKilledAdvancementCriterion(Lnet/minecraft/entity/Entity;Lnet/minecraft/entity/damage/DamageSource;)V",
             at = @At("TAIL"))
     private void onUpdateKilledAdvancementCriterion(Entity entityKilled, DamageSource damageSource, CallbackInfo info) {
-        get().onKill(entityKilled, damageSource);
+        this.<Pony>get().onKill(entityKilled, damageSource);
     }
 
     @Inject(method = "startRiding(Lnet/minecraft/entity/Entity;Z)Z", at = @At("HEAD"))
     private void onStartRiding(Entity entity, boolean force, CallbackInfoReturnable<Boolean> info) {
-        get().getPhysics().cancelFlight(true);
+        this.<Pony>get().getPhysics().cancelFlight(true);
     }
 
     @WrapOperation(method = "getWorldSpawnPos", at = @At(

@@ -7,16 +7,17 @@ import java.util.stream.Stream;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
+import com.minelittlepony.unicopia.network.track.DataTrackerManager;
 import com.minelittlepony.unicopia.util.Copyable;
 import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
 
 public interface SpellSlots extends NbtSerialisable, Copyable<SpellSlots> {
-    static SpellInventory ofUnbounded(Caster<?> caster) {
-        return new SpellInventory(caster, new MultiSpellSlot(caster));
+    static SpellInventory ofUnbounded(DataTrackerManager tracker, Caster<?> caster) {
+        return new SpellInventory(caster, new MultiSpellSlot(tracker, caster));
     }
 
-    static SpellInventory ofSingle(Caster<?> caster) {
-        return new SpellInventory(caster, new SingleSpellSlot(caster));
+    static SpellInventory ofSingle(DataTrackerManager tracker, Caster<?> caster) {
+        return new SpellInventory(caster, new SingleSpellSlot(tracker, caster));
     }
 
     /**

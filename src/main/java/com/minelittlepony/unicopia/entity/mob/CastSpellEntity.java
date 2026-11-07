@@ -47,7 +47,7 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<CastS
 
     private final EntityPhysics<CastSpellEntity> physics = new EntityPhysics<>(this);
 
-    private final SpellInventory spells = SpellSlots.ofSingle(this);
+    private final SpellInventory spells = SpellSlots.ofSingle(Trackable.of(this).getDataTrackers(), this);
 
     private final EntityReference<LivingEntity> owner = new EntityReference<>();
 

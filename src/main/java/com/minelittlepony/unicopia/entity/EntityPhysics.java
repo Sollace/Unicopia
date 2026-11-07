@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.entity;
 
+import com.minelittlepony.unicopia.EntityConvertable;
 import com.minelittlepony.unicopia.entity.mob.UEntityAttributes;
 import com.minelittlepony.unicopia.network.track.DataTracker;
 import com.minelittlepony.unicopia.network.track.Trackable;
@@ -23,13 +24,16 @@ public class EntityPhysics<T extends Entity> implements Physics, Copyable<Entity
 
     private float lastGravity = DEFAULT_GRAVITY_FACTOR;
 
-    private final DataTracker tracker;
     protected final DataTracker.Entry<Float> gravity;
+
+    public EntityPhysics(DataTracker tracker, EntityConvertable<T> entity) {
+        this.entity = entity.asEntity();
+        gravity = tracker.startTracking(TrackableDataType.FLOAT, DEFAULT_GRAVITY_FACTOR);
+    }
 
     public EntityPhysics(T entity) {
         this.entity = entity;
-        this.tracker = Trackable.of(entity).getDataTrackers().getPrimaryTracker();
-        gravity = tracker.startTracking(TrackableDataType.FLOAT, DEFAULT_GRAVITY_FACTOR);
+        gravity = Trackable.of(entity).getDataTrackers().getPrimaryTracker().startTracking(TrackableDataType.FLOAT, DEFAULT_GRAVITY_FACTOR);
     }
 
     @Override
@@ -148,5 +152,4 @@ public class EntityPhysics<T extends Entity> implements Physics, Copyable<Entity
     public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
         setBaseGravityModifier(compound.getFloat("gravity", DEFAULT_GRAVITY_FACTOR));
     }
-
 }

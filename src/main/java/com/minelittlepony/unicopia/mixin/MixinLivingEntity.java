@@ -18,6 +18,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.AbstractDisguiseSpell;
 import com.minelittlepony.unicopia.entity.*;
 import com.minelittlepony.unicopia.entity.behaviour.EntityAppearance;
 import com.minelittlepony.unicopia.entity.duck.*;
+import com.minelittlepony.unicopia.util.Untyped;
 
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.entity.Entity;
@@ -26,7 +27,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -45,8 +45,6 @@ abstract class MixinLivingEntity extends Entity implements LivingEntityDuck {
     @Shadow
     private Optional<BlockPos> climbingPos;
 
-    private Equine<?> caster;
-
     private MixinLivingEntity() { super(null, null); }
 
     @Shadow
@@ -54,17 +52,7 @@ abstract class MixinLivingEntity extends Entity implements LivingEntityDuck {
 
     @Override
     public Equine<?> create() {
-        return new Creature((LivingEntity)(Object)this);
-    }
-
-    @Override
-    public Living<?> get() {
-        synchronized (this) {
-            if (caster == null) {
-                caster = create();
-            }
-            return (Living<?>)caster;
-        }
+        return new Creature(Untyped.cast(this));
     }
 
     @Override
@@ -95,7 +83,7 @@ abstract class MixinLivingEntity extends Entity implements LivingEntityDuck {
     @ModifyReturnValue(method = "dropItem(Lnet/minecraft/item/ItemStack;ZZ)Lnet/minecraft/entity/ItemEntity;", at = @At("RETURN"))
     private @Nullable ItemEntity onDropItem(@Nullable ItemEntity item) {
         if (item != null) {
-            get().onDropItem(item);
+            this.<Living<?>>get().onDropItem(item);
         }
         return item;
     }
@@ -103,7 +91,7 @@ abstract class MixinLivingEntity extends Entity implements LivingEntityDuck {
     @Inject(method = "isClimbing()Z", at = @At("HEAD"), cancellable = true)
     public void onIsClimbing(CallbackInfoReturnable<Boolean> info) {
         if (horizontalCollision) {
-            get().chooseClimbingPos().ifPresent(pos -> {
+            this.<Living<?>>get().chooseClimbingPos().ifPresent(pos -> {
                 climbingPos = Optional.of(pos);
                 info.setReturnValue(true);
             });
@@ -124,14 +112,14 @@ abstract class MixinLivingEntity extends Entity implements LivingEntityDuck {
 
     @Inject(method = "canSee(Lnet/minecraft/entity/Entity;Lnet/minecraft/world/RaycastContext$ShapeType;Lnet/minecraft/world/RaycastContext$FluidHandling;D)Z", at = @At("HEAD"), cancellable = true)
     private void onCanSee(Entity entity, RaycastContext.ShapeType shapeType, RaycastContext.FluidHandling fluidHandling, double entityY, CallbackInfoReturnable<Boolean> info) {
-        if (!get().canBeSeenBy(entity)) {
+        if (!this.<Living<?>>get().canBeSeenBy(entity)) {
             info.setReturnValue(false);
         }
     }
 
     @ModifyReturnValue(method = "applyFluidMovingSpeed", at = @At("RETURN"))
     private Vec3d applyFluidMovingSpeed(Vec3d speed, double gravity, boolean falling, Vec3d motion) {
-        return get().adjustMovementSpeedInWater(speed).orElse(speed);
+        return this.<Living<?>>get().adjustMovementSpeedInWater(speed).orElse(speed);
     }
 
     @Inject(method = "tick()V", at = @At("HEAD"), cancellable = true)
@@ -154,55 +142,43 @@ abstract class MixinLivingEntity extends Entity implements LivingEntityDuck {
 
     @Inject(method = "damage(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/entity/damage/DamageSource;F)Z", at = @At("HEAD"), cancellable = true)
     private void onDamage(ServerWorld world, DamageSource source, float amount, CallbackInfoReturnable<Boolean> info) {
-        get().onDamage(world, source, amount).ifPresent(info::setReturnValue);
+        this.<Living<?>>get().onDamage(world, source, amount).ifPresent(info::setReturnValue);
     }
 
     @Inject(method = "tryUseDeathProtector(Lnet/minecraft/entity/damage/DamageSource;)Z", at = @At("RETURN"))
     private void onOnDeath(DamageSource source, CallbackInfoReturnable<Boolean> info) {
         if (!isRemoved() && !dead) {
-            get().onDeath(source, info.getReturnValue());
+            this.<Living<?>>get().onDeath(source, info.getReturnValue());
         }
     }
 
     @Inject(method = "onAttacking(Lnet/minecraft/entity/Entity;)V", at = @At("HEAD"))
     private void onOnAttacking(Entity target, CallbackInfo info) {
-        get().onAttacking(target);
+        this.<Living<?>>get().onAttacking(target);
     }
 
     @ModifyVariable(method = "handleFallDamage(DFLnet/minecraft/entity/damage/DamageSource;)Z", at = @At("HEAD"), ordinal = 0, argsOnly = true)
     private double onHandleFallDamage(double distance, double distanceAgain, float damagePerDistance, DamageSource cause) {
-        return get().onImpact(distance, damagePerDistance, cause);
+        return this.<Living<?>>get().onImpact(distance, damagePerDistance, cause);
     }
 
     @Inject(method = "onDismounted(Lnet/minecraft/entity/Entity;)V", at = @At("HEAD"))
     private void onOnDismounted(Entity vehicle, CallbackInfo info) {
-        get().onDismounted(vehicle);
+        this.<Living<?>>get().onDismounted(vehicle);
     }
 
     @ModifyReturnValue(method = "hurtByWater()Z", at = @At("RETURN"))
     private boolean onCanBeHurtByWater(boolean hurt) {
-        TriState hurtByWater = get().canBeHurtByWater();
+        TriState hurtByWater = this.<Living<?>>get().canBeHurtByWater();
         if (hurtByWater != TriState.DEFAULT) {
             return hurtByWater.get();
         }
         return hurt;
     }
 
-    @Inject(method = "writeCustomDataToNbt(Lnet/minecraft/nbt/NbtCompound;)V", at = @At("HEAD"))
-    private void onWriteCustomDataToTag(NbtCompound tag, CallbackInfo info) {
-        tag.put("unicopia_caster", get().toNBT(getWorld().getRegistryManager()));
-    }
-
-    @Inject(method = "readCustomDataFromNbt(Lnet/minecraft/nbt/NbtCompound;)V", at = @At("HEAD"))
-    private void onReadCustomDataFromTag(NbtCompound tag, CallbackInfo info) {
-        if (tag.contains("unicopia_caster")) {
-            get().fromNBT(tag.getCompoundOrEmpty("unicopia_caster"), getWorld().getRegistryManager());
-        }
-    }
-
     @Inject(method = "tickMovement", at = @At("TAIL"))
     public void afterMovementTick(CallbackInfo info) {
-        Transportation.of(this).tickMovement();
+        get().getTransportation().tickMovement();
     }
 
     @Override

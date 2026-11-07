@@ -5,8 +5,6 @@ import com.minelittlepony.unicopia.item.ItemDuck;
 import com.minelittlepony.unicopia.item.enchantment.EnchantmentUtil;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.network.track.DataTracker;
-import com.minelittlepony.unicopia.network.track.DataTrackerManager;
-import com.minelittlepony.unicopia.network.track.Trackable;
 import com.minelittlepony.unicopia.network.track.TrackableDataType;
 import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
@@ -14,7 +12,6 @@ import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.util.VecHelper;
 import net.minecraft.entity.*;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleEffect;
@@ -23,28 +20,15 @@ import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 
-public class ItemImpl implements Equine<ItemEntity> {
-    private final ItemEntity entity;
-
+public class ItemImpl extends BaseEquine<ItemEntity> implements Physics.Source {
     private final ItemPhysics physics;
-
-    private final DataTrackerManager trackers;
-    protected final DataTracker tracker;
-
     private final DataTracker.Entry<Race> race;
 
-    public ItemImpl(ItemEntity owner) {
-        this.entity = owner;
-        this.trackers = Trackable.of(entity).getDataTrackers();
-        this.tracker = trackers.getPrimaryTracker();
-        this.physics = new ItemPhysics(owner);
+    public ItemImpl(EntityConvertable<ItemEntity> owner) {
+        super(owner);
+        this.physics = new ItemPhysics(getDataTrackerManager().getPrimaryTracker(), owner);
 
-        race = tracker.startTracking(TrackableDataType.RACE, Race.HUMAN);
-    }
-
-    @Override
-    public boolean onProjectileImpact(ProjectileEntity projectile) {
-        return false;
+        race = getDataTrackerManager().getPrimaryTracker().startTracking(TrackableDataType.RACE, Race.HUMAN);
     }
 
     @Override
@@ -123,6 +107,7 @@ public class ItemImpl implements Equine<ItemEntity> {
     @Override
     public void tick() {
         physics.tick();
+        super.tick();
     }
 
     @Override
@@ -157,11 +142,6 @@ public class ItemImpl implements Equine<ItemEntity> {
         physics.fromNBT(compound, lookup);
     }
 
-    @Override
-    public ItemEntity asEntity() {
-        return entity;
-    }
-
     public interface ClingyItem {
         default boolean isClingy(ItemStack stack) {
             return EnchantmentUtil.getLevel(UEnchantments.CLINGY, stack) > 0;
@@ -173,11 +153,11 @@ public class ItemImpl implements Equine<ItemEntity> {
         }
 
         default float getFollowDistance(IItemEntity entity) {
-            return 6 * (1 + EnchantmentUtil.getLevel(UEnchantments.CLINGY, entity.get().asEntity().getStack()));
+            return 6 * (1 + EnchantmentUtil.getLevel(UEnchantments.CLINGY, entity.<ItemImpl>get().asEntity().getStack()));
         }
 
         default float getFollowSpeed(IItemEntity entity) {
-            return Math.min(1, 0.02F * (1 + EnchantmentUtil.getLevel(UEnchantments.CLINGY, entity.get().asEntity().getStack())));
+            return Math.min(1, 0.02F * (1 + EnchantmentUtil.getLevel(UEnchantments.CLINGY, entity.<ItemImpl>get().asEntity().getStack())));
         }
 
         default void interactWithPlayer(IItemEntity entity, PlayerEntity player) {

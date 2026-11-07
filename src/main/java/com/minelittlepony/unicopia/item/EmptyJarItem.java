@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.item;
 
+import com.minelittlepony.unicopia.entity.ItemImpl;
+
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
@@ -14,7 +16,7 @@ public class EmptyJarItem extends BlockItem {
     public EmptyJarItem(Block block, Settings settings) {
         super(block, settings);
         TickableItem.registerTickCallback(this, item -> {
-            ItemEntity entity = item.get().asEntity();
+            ItemEntity entity = item.<ItemImpl>get().asEntity();
 
             entity.setInvulnerable(true);
 

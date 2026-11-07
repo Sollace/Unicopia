@@ -13,14 +13,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.minelittlepony.unicopia.entity.duck.LavaAffine;
 import com.minelittlepony.unicopia.network.track.DataTrackerManager;
-import com.minelittlepony.unicopia.network.track.Trackable;
+import com.minelittlepony.unicopia.util.Untyped;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.entity.BaseEquine;
 import com.minelittlepony.unicopia.entity.Equine;
 import com.minelittlepony.unicopia.entity.Living;
-import com.minelittlepony.unicopia.entity.Transportation;
 import com.minelittlepony.unicopia.entity.duck.EntityDuck;
 
 import net.minecraft.block.BlockState;
@@ -31,46 +31,49 @@ import net.minecraft.entity.Entity.PositionUpdater;
 import net.minecraft.entity.Entity.RemovalReason;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
 
 @Mixin(Entity.class)
-abstract class MixinEntity implements EntityDuck, Trackable, Transportation.Holder<Entity> {
+abstract class MixinEntity implements EntityDuck {
     @Nullable
-    private transient Caster<?> host;
+    private Equine<?> caster;
 
-    private DataTrackerManager dataTrackerManager;
-
-    private final Transportation<Entity> transportation = new Transportation<>((Entity)(Object)this);
+    @Override
+    public Entity asEntity() {
+        return (Entity)(Object)this;
+    }
 
     @Override
     @Nullable
     public Caster<?> getHost() {
-        return host;
+        return ((BaseEquine<?>)get()).getHost();
     }
 
     @Override
-    public Transportation<Entity> get() {
-        return transportation;
+    public Equine<?> create() {
+        return new BaseEquine<>(this);
+    }
+
+    @Override
+    public final <T extends Equine<?>> T get() {
+        if (caster == null) {
+            caster = create();
+        }
+        return Untyped.cast(caster);
     }
 
     @Override
     public void setHost(Caster<?> host) {
-        this.host = host;
+        ((BaseEquine<?>)get()).setHost(host);
     }
 
     @Override
     public DataTrackerManager getDataTrackers() {
         synchronized (this) {
-            if (dataTrackerManager == null) {
-                dataTrackerManager = new DataTrackerManager((Entity)(Object)this);
-                // ensure lazy registration happens
-                if (this instanceof Equine.Container<?> eq) {
-                    eq.get();
-                }
-            }
-            return dataTrackerManager;
+            return ((BaseEquine<?>)get()).getDataTrackerManager();
         }
     }
 
@@ -88,44 +91,52 @@ abstract class MixinEntity implements EntityDuck, Trackable, Transportation.Hold
 
     @Override
     public boolean isLavaAffine() {
-        Entity self = (Entity)(Object)this;
-        return self.hasVehicle() && self.getVehicle() instanceof LavaAffine affine && affine.isLavaAffine();
+        return asEntity().hasVehicle() && asEntity().getVehicle() instanceof LavaAffine affine && affine.isLavaAffine();
     }
 
-    @Inject(method = "isInvulnerable", at = @At("HEAD"), cancellable = true)
-    private void onIsInvulnerable(CallbackInfoReturnable<Boolean> info) {
-        Living<?> living = Living.living((Entity)(Object)this);
-        if (living != null && living.isInvulnerable()) {
-            info.setReturnValue(true);
+    @Inject(method = "writeNbt",
+            at = @At(
+                    value = "INVOKE",
+                    target = "net/minecraft/entity/Entity.writeCustomDataToNbt(Lnet/minecraft/nbt/NbtCompound;)V"
+    ))
+    private void onWriteNbt(NbtCompound nbt, CallbackInfoReturnable<NbtCompound> info) {
+        nbt.put("unicopia_caster", get().toNBT(asEntity().getRegistryManager()));
+    }
+
+    @Inject(method = "readNbt",
+            at = @At(
+                    value = "INVOKE",
+                    target = "net/minecraft/entity/Entity.readCustomDataFromNbt(Lnet/minecraft/nbt/NbtCompound;)V"
+    ))
+    private void onReadNbt(NbtCompound nbt, CallbackInfo info) {
+        if (nbt.contains("unicopia_caster")) {
+            get().fromNBT(nbt.getCompoundOrEmpty("unicopia_caster"), asEntity().getRegistryManager());
         }
     }
 
-    @Inject(method = "isFireImmune", at = @At("HEAD"), cancellable = true)
-    private void onIsFireImmune(CallbackInfoReturnable<Boolean> info) {
-        if (isLavaAffine() || (this instanceof Equine.Container c) && c.get().getCompositeRace().includes(Race.KIRIN)) {
-            info.setReturnValue(true);
-        }
+    @ModifyReturnValue(method = "isInvulnerable", at = @At("RETURN"))
+    private boolean onIsInvulnerable(boolean invulnerable) {
+        return invulnerable || (get() instanceof Living l && l.isInvulnerable());
     }
 
-    @Inject(method = "isSneaky", at = @At("HEAD"), cancellable = true)
-    private void onIsSneaky(CallbackInfoReturnable<Boolean> info) {
-        if (EquinePredicates.PLAYER_KIRIN.test((Entity)(Object)this) && !EquinePredicates.RAGING.test((Entity)(Object)this)) {
-            info.setReturnValue(true);
-        }
+    @ModifyReturnValue(method = "isFireImmune", at = @At("RETURN"))
+    private boolean onIsFireImmune(boolean fireImmune) {
+        return fireImmune || (isLavaAffine() || get().getCompositeRace().includes(Race.KIRIN));
     }
 
-    @Inject(method = "getMaxAir", at = @At("HEAD"), cancellable = true)
-    private void onGetMaxAir(CallbackInfoReturnable<Integer> info) {
-        if (EquinePredicates.PLAYER_KIRIN.test((Entity)(Object)this)) {
-            info.setReturnValue(150);
-        }
+    @ModifyReturnValue(method = "isSneaky", at = @At("RETURN"))
+    private boolean onIsSneaky(boolean sneaky) {
+        return sneaky || (EquinePredicates.PLAYER_KIRIN.test(asEntity()) && !EquinePredicates.RAGING.test(asEntity()));
     }
 
-    @Inject(method = "doesRenderOnFire", at = @At("HEAD"), cancellable = true)
-    private void onDoesRenderOnFire(CallbackInfoReturnable<Boolean> info) {
-        if (EquinePredicates.RAGING.test((Entity)(Object)this)) {
-            info.setReturnValue(true);
-        }
+    @ModifyReturnValue(method = "getMaxAir", at = @At("RETURN"))
+    private int onGetMaxAir(int maxAir) {
+        return maxAir / (EquinePredicates.PLAYER_KIRIN.test(asEntity()) ? 2 : 1);
+    }
+
+    @ModifyReturnValue(method = "doesRenderOnFire", at = @At("RETURN"))
+    private boolean onDoesRenderOnFire(boolean onFire) {
+        return onFire || EquinePredicates.RAGING.test(asEntity());
     }
 
     @Inject(method = "updatePassengerPosition(Lnet/minecraft/entity/Entity;Lnet/minecraft/entity/Entity$PositionUpdater;)V",
@@ -133,7 +144,7 @@ abstract class MixinEntity implements EntityDuck, Trackable, Transportation.Hold
             cancellable = true
     )
     private void updatePassengerPosition(Entity passenger, PositionUpdater positionUpdater, CallbackInfo info) {
-        if (Living.getOrEmpty((Entity)(Object)this).filter(l -> l.onUpdatePassengerPosition(passenger, positionUpdater)).isPresent()) {
+        if (get() instanceof Living l && l.onUpdatePassengerPosition(passenger, positionUpdater)) {
             info.cancel();
         }
     }
@@ -147,29 +158,29 @@ abstract class MixinEntity implements EntityDuck, Trackable, Transportation.Hold
 
     @ModifyReturnValue(method = "dropStack(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/item/ItemStack;F)Lnet/minecraft/entity/ItemEntity;", at = @At("RETURN"))
     private @Nullable ItemEntity onDropItem(@Nullable ItemEntity item) {
-        if (item != null) {
-            Living.getOrEmpty((Entity)(Object)this).ifPresent(l -> l.onDropItem(item));
+        if (item != null && get() instanceof Living l) {
+            l.onDropItem(item);
         }
         return item;
     }
 
     @ModifyVariable(method = "move", at = @At("HEAD"), argsOnly = true)
     private Vec3d beforeMove(Vec3d velocity, MovementType movementType, Vec3d copyOfMovement) {
-        return transportation.beforeMove(velocity, movementType);
+        return get().getTransportation().beforeMove(velocity, movementType);
     }
 
     @Inject(method = "move", at = @At("RETURN"))
     private void afterMove(MovementType movementType, Vec3d movement, CallbackInfo info) {
-        transportation.afterMove(movementType);
+        get().getTransportation().afterMove(movementType);
     }
 
     @ModifyVariable(method = "applyMoveEffect", at = @At("HEAD"), argsOnly = true)
     private BlockState modifyPrimarySteppingStateOnMove(BlockState state) {
-        return transportation.getSteppingState().orElse(state);
+        return get().getTransportation().getSteppingState().orElse(state);
     }
 
     @ModifyVariable(method = "applyMoveEffect", at = @At("STORE"), ordinal = 1)
     private BlockState modifySteppingStateOnMove(BlockState state) {
-        return transportation.getSteppingState().orElse(state);
+        return get().getTransportation().getSteppingState().orElse(state);
     }
 }

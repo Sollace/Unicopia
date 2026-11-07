@@ -21,6 +21,8 @@ import com.minelittlepony.unicopia.entity.EntityPhysics;
 import com.minelittlepony.unicopia.entity.MagicImmune;
 import com.minelittlepony.unicopia.entity.Physics;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
+import com.minelittlepony.unicopia.network.track.Trackable;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.data.DataTracker;
@@ -39,8 +41,8 @@ public class MagicBeamEntity extends MagicProjectileEntity implements Caster<Mag
     private static final TrackedData<Integer> CORRUPTION = DataTracker.registerData(MagicBeamEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Integer> MAX_CORRUPTION = DataTracker.registerData(MagicBeamEntity.class, TrackedDataHandlerRegistry.INTEGER);
 
-    private final SpellInventory spells = SpellSlots.ofSingle(this);
-    private final EntityPhysics<MagicProjectileEntity> physics = new EntityPhysics<>(this);
+    private final SpellInventory spells = SpellSlots.ofSingle(Trackable.of(this).getDataTrackers(), this);
+    private final EntityPhysics<MagicProjectileEntity> physics;
 
     private final LevelStore level = Levelled.of(
             () -> dataTracker.get(LEVEL),
@@ -55,6 +57,7 @@ public class MagicBeamEntity extends MagicProjectileEntity implements Caster<Mag
 
     public MagicBeamEntity(EntityType<MagicBeamEntity> type, World world) {
         super(type, world);
+        this.physics = new EntityPhysics<>(this);
     }
 
     public MagicBeamEntity(World world, Entity owner, float divergance, Spell spell) {
@@ -64,6 +67,7 @@ public class MagicBeamEntity extends MagicProjectileEntity implements Caster<Mag
         setVelocity(owner, owner.getPitch(), owner.getYaw(), 0, 1.5F, divergance);
         setNoGravity(true);
         spell.apply(this);
+        this.physics = new EntityPhysics<>(this);
     }
 
     @Override

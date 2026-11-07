@@ -9,8 +9,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.minelittlepony.unicopia.client.minelittlepony.EntityLookupAccessor;
 import com.minelittlepony.unicopia.client.render.WorldRenderDelegate;
-import com.minelittlepony.unicopia.entity.Transportation;
-
+import com.minelittlepony.unicopia.entity.Equine;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Vec3d;
@@ -29,7 +28,7 @@ abstract class MixinClientWorld implements EntityLookupAccessor {
 
     @Inject(method = "tickEntity", at = @At("HEAD"), cancellable = true)
     private void beforeTickEntity(Entity entity, CallbackInfo info) {
-        if (!Transportation.of(entity).canTick()) {
+        if (!Equine.cast(entity).getTransportation().canTick()) {
             info.cancel();
         }
     }

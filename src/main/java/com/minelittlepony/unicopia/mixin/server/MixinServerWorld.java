@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import com.minelittlepony.unicopia.entity.Transportation;
+import com.minelittlepony.unicopia.entity.Equine;
 import com.minelittlepony.unicopia.server.world.BlockDestructionManager;
 import com.minelittlepony.unicopia.server.world.NocturnalSleepManager;
 
@@ -52,7 +52,7 @@ abstract class MixinServerWorld implements StructureWorldAccess, NocturnalSleepM
 
     @Inject(method = "tickEntity", at = @At("HEAD"), cancellable = true)
     private void beforeTickEntity(Entity entity, CallbackInfo info) {
-        if (!Transportation.of(entity).canTick()) {
+        if (!Equine.cast(entity).getTransportation().canTick()) {
             info.cancel();
         }
     }

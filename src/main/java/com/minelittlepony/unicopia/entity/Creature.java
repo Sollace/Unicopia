@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Affinity;
+import com.minelittlepony.unicopia.EntityConvertable;
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.WeaklyOwned;
@@ -65,9 +66,9 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
     protected final DataTracker.Entry<Boolean> discorded;
     protected final DataTracker.Entry<Boolean> smitten;
 
-    public Creature(LivingEntity entity) {
+    public Creature(EntityConvertable<LivingEntity> entity) {
         super(entity);
-        physics = new EntityPhysics<>(entity);
+        physics = new EntityPhysics<>(getDataTrackerManager().getPrimaryTracker(), entity);
         addTicker(physics);
         addTicker(this::updateConsumption);
 
