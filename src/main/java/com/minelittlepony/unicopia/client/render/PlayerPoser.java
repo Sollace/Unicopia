@@ -14,7 +14,6 @@ import com.mojang.serialization.Codec;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
-import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.command.argument.EnumArgumentType;
@@ -360,13 +359,6 @@ public class PlayerPoser {
             model.rightArm.yaw = 0.3F;
             model.leftArm.roll = 0;
             model.rightArm.roll = 0;
-        }
-
-        if (model instanceof PlayerEntityModel m) {
-            m.leftSleeve.copyTransform(m.leftArm);
-            m.rightSleeve.copyTransform(m.rightArm);
-            m.leftPants.copyTransform(m.leftLeg);
-            m.rightPants.copyTransform(m.rightLeg);
         }
     }
 
