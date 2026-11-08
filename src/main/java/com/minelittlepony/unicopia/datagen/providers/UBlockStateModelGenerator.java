@@ -55,6 +55,7 @@ import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.AxisRotation;
 import net.minecraft.util.math.Direction;
+import net.minecraft.world.biome.FoliageColors;
 
 import static net.minecraft.client.data.TextureKey.*;
 import static net.minecraft.util.math.AxisRotation.*;
@@ -151,7 +152,7 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
         createLogTexturePool(UBlocks.STRIPPED_PALM_LOG).log(UBlocks.STRIPPED_PALM_LOG).wood(UBlocks.STRIPPED_PALM_WOOD);
         registerCubeAllModelTexturePool(UBlocks.PALM_PLANKS).family(UBlockFamilies.PALM);
         registerHangingSign(UBlocks.STRIPPED_PALM_LOG, UBlocks.PALM_HANGING_SIGN, UBlocks.PALM_WALL_HANGING_SIGN);
-        registerSingleton(UBlocks.PALM_LEAVES, TexturedModel.LEAVES);
+        registerTintedBlockAndItem(UBlocks.PALM_LEAVES, TexturedModel.LEAVES, FoliageColors.DEFAULT);
 
         // zap wood
         createLogTexturePool(UBlocks.ZAP_LOG)

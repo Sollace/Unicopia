@@ -33,6 +33,7 @@ import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry.Pendin
 import net.fabricmc.fabric.api.client.rendering.v1.*;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.color.world.BiomeColors;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.SpriteProvider;
 import net.minecraft.client.render.*;
@@ -41,6 +42,7 @@ import net.minecraft.client.render.entity.FlyingItemEntityRenderer;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.particle.ParticleEffect;
+import net.minecraft.world.biome.FoliageColors;
 
 public interface URenderers {
 
@@ -97,6 +99,7 @@ public interface URenderers {
         BlockEntityRendererFactories.register(UBlockEntities.ITEM_JAR, ItemJarBlockEntityRenderer::new);
 
         ColorProviderRegistry.BLOCK.register(BlockTintSource::getColor, TintedBlock.REGISTRY.stream().toArray(Block[]::new));
+        ColorProviderRegistry.BLOCK.register((state, world, pos, tintIndex) -> world != null && pos != null ? BiomeColors.getFoliageColor(world, pos) : FoliageColors.DEFAULT, UBlocks.PALM_LEAVES);
         BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(), UBlocks.TRANSLUCENT_BLOCKS.stream().toArray(Block[]::new));
         BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getTranslucent(), UBlocks.SEMI_TRANSPARENT_BLOCKS.stream().toArray(Block[]::new));
         // for lava boats
