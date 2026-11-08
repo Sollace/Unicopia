@@ -35,7 +35,7 @@ abstract class MixinGameRenderer implements AutoCloseable, SynchronousResourceRe
     @ModifyArg(method = "renderWorld", at = @At(value = "INVOKE",
             target = "net/minecraft/client/render/GameRenderer.tiltViewWhenHurt(Lnet/minecraft/client/util/math/MatrixStack;F)V"), index = 0)
     private MatrixStack tiltViewWhenHurt(MatrixStack matrices) {
-        float roll = UnicopiaClient.getCamera().calculateRoll(client.options.getPerspective().isFirstPerson(), client.options.getFov().getValue().floatValue());
+        float roll = UnicopiaClient.getCamera().calculateRoll(client.options.getPerspective().isFirstPerson(), client.options.getFovEffectScale().getValue().floatValue());
         if (roll != 0) {
             matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(roll));
         }
