@@ -16,6 +16,8 @@ public interface ItemFamilies {
     };
     Item[] BASKETS = {
             UItems.ACACIA_BASKET, UItems.BAMBOO_BASKET, UItems.BIRCH_BASKET, UItems.CHERRY_BASKET, UItems.DARK_OAK_BASKET, UItems.PALE_OAK_BASKET,
-            UItems.JUNGLE_BASKET, UItems.MANGROVE_BASKET, UItems.OAK_BASKET, UItems.PALM_BASKET, UItems.SPRUCE_BASKET
+            UItems.JUNGLE_BASKET, UItems.MANGROVE_BASKET, UItems.OAK_BASKET, UItems.PALM_BASKET, UItems.SPRUCE_BASKET,
+            UItems.WARPED_BASKET, UItems.CRIMSON_BASKET,
+            UItems.GOLDEN_OAK_BASKET, UItems.ZAP_BASKET
     };
 }

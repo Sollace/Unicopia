@@ -11,9 +11,11 @@ import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
+import net.minecraft.particle.EntityEffectParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.particle.ParticleUtil;
 import net.minecraft.registry.Registries;
+import net.minecraft.util.Colors;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
@@ -41,6 +43,12 @@ public class GoldenOakLeavesBlock extends FruitBearingBlock {
         if (random.nextInt(15) == 0) {
             ParticleUtil.spawnParticlesAround(world, pos, 1 + random.nextInt(4), ParticleTypes.ELECTRIC_SPARK);
         }
+    }
+
+    @Override
+    protected void spawnLeafParticle(World world, BlockPos pos, Random random) {
+        EntityEffectParticleEffect entityEffectParticleEffect = EntityEffectParticleEffect.create(ParticleTypes.TINTED_LEAVES, Colors.YELLOW);
+        ParticleUtil.spawnParticle(world, pos, random, entityEffectParticleEffect);
     }
 
     @Override
