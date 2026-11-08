@@ -39,8 +39,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
-
 import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.advancement.UCriteria;
@@ -373,9 +371,12 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
         }
     }
 
+    public List<Box> getGroundBoxes() {
+        return passengers.stream().map(passenger -> passenger.getGroundBox()).filter(Objects::nonNull).distinct().toList();
+    }
     private void updatePassengers() {
         this.passengers.forEach(passenger -> passenger.setVehicle(null));
-        this.passengers = getCollidingEntities(getGravityZoneBoxes().stream()).entrySet().stream()
+        this.passengers = EntityCollisions.getCollidingEntities(this, getGravityZoneBoxes().stream(), RIDER_PREDICATE).entrySet().stream()
                 .flatMap(entry -> entry.getValue().stream())
                 .distinct()
                 .map(entity -> Equine.cast(entity).getTransportation())
@@ -385,13 +386,9 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
 
     private void movePassengers(Vec3d positionChange) {
         if (isAirworthy() && !isOnGround()) {
-            passengers.forEach(passenger -> {
-                passenger.move(positionChange);
-            });
+            passengers.forEach(passenger -> passenger.move(positionChange));
         }
-        passengers.forEach(passenger -> {
-            passenger.tickRiding();
-        });
+        passengers.forEach(Transportation::tickRiding);
     }
 
     @Override
@@ -584,7 +581,6 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
         return isAirworthy() && !isAscending();
     }
 
-
     @Override
     public float getCloudWalkingStrength() {
         return isAirworthy() ? 2 : 0;
@@ -626,7 +622,7 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
     public Box getBalloonBoundingBox(Box mainBox) {
         float inflation = getInflation(1);
         return MultiBox.unbox(mainBox)
-                .offset(0.125, 7.3 * inflation, 0.125)
+                .offset(0, 7.3 * inflation, 0)
                 .expand(2.25, 3.7 * inflation, 2.25);
     }
 
@@ -641,17 +637,17 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
     @Override
     public List<Box> getGravityZoneBoxes() {
         Box mainBox = getBoundingBox();
-        Box balloon = getBalloonBoundingBox(mainBox).expand(0.001).offset(-0.25, 0, 0);
-        Box interior = getInteriorBoundingBox(mainBox).expand(0.001);
+        Box balloon = getBalloonBoundingBox(mainBox).expand(0.001);
+        Box interior = getInteriorBoundingBox(mainBox).expand(0.125, 0, 0.125);
         if (hasBalloon() && getInflation(1) > 0.999F) {
             return List.of(
                     // interior - slim layer above the bottom of the basket
-                    interior.withMaxY(interior.maxY + 0.75).withMinY(interior.minY - 0.25),
+                    interior.withMaxY(interior.maxY + 2.75).withMinY(mainBox.minY - 0.1),
                     // balloon - slim layer on top of the balloon
-                    balloon.withMaxY(balloon.maxY + 0.5).withMinY(balloon.maxY - 2)
+                    balloon.withMaxY(balloon.maxY + 0.5).withMinY(balloon.maxY)
             );
         }
-        return List.of(interior.withMaxY(interior.maxY + 1.5).withMinY(interior.maxY - 2));
+        return List.of(interior.withMaxY(interior.maxY + 1.5).withMinY(mainBox.minY - 0.1));
     }
 
     @Override
@@ -664,6 +660,8 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
         double wallThickness = 0.15;
         double halfDoorWidth = 0.5;
         double balloonWallThickness = 0.25;
+
+        boxes.add(mainBox);
 
         if (!getBasketType().isOf(WoodType.BAMBOO)) {
 
@@ -681,15 +679,6 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
             boxes.add(new Box(mainBox.minX, mainBox.maxY, mainBox.minZ, box.minX + wallThickness, wallheight, mainBox.maxZ));
         }
 
-        if (hasBalloon() && getInflation(1) >= 1) {
-            Box balloonBox = getBalloonBoundingBox(mainBox);
-            boxes.add(balloonBox.withMinY(balloonBox.maxY - balloonWallThickness));
-            boxes.add(balloonBox.withMaxX(balloonBox.minX + balloonWallThickness).withMaxY(balloonBox.maxY - balloonWallThickness).withMinZ(balloonBox.minZ + balloonWallThickness).withMaxZ(balloonBox.maxZ - balloonWallThickness));
-            boxes.add(balloonBox.withMinX(balloonBox.maxX - balloonWallThickness).withMaxY(balloonBox.maxY - balloonWallThickness).withMinZ(balloonBox.minZ + balloonWallThickness).withMaxZ(balloonBox.maxZ - balloonWallThickness));
-            boxes.add(balloonBox.withMaxZ(balloonBox.minZ + balloonWallThickness).withMaxY(balloonBox.maxY - balloonWallThickness));
-            boxes.add(balloonBox.withMinZ(balloonBox.maxZ - balloonWallThickness).withMaxY(balloonBox.maxY - balloonWallThickness));
-        }
-
         float yaw = (180 - getHorizontalFacing().getPositiveHorizontalDegrees()) * MathHelper.RADIANS_PER_DEGREE;
         if (yaw != 0) {
             Vec3d center = getPos();
@@ -699,6 +688,15 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
                 Vec3d max = new Vec3d(b.maxX, b.maxY, b.maxZ).subtract(center).rotateY(yaw).add(center);
                 boxes.set(i, new Box(min.x, min.y, min.z, max.x, max.y, max.z));
             }
+        }
+
+        if (hasBalloon() && getInflation(1) >= 1) {
+            Box balloonBox = getBalloonBoundingBox(mainBox);
+            boxes.add(balloonBox.contract(balloonWallThickness, 0, balloonWallThickness).withMinY(balloonBox.maxY - 5));
+            boxes.add(balloonBox.withMaxX(balloonBox.minX + balloonWallThickness).withMinZ(balloonBox.minZ + balloonWallThickness).withMaxZ(balloonBox.maxZ - balloonWallThickness));
+            boxes.add(balloonBox.withMinX(balloonBox.maxX - balloonWallThickness).withMinZ(balloonBox.minZ + balloonWallThickness).withMaxZ(balloonBox.maxZ - balloonWallThickness));
+            boxes.add(balloonBox.withMaxZ(balloonBox.minZ + balloonWallThickness));
+            boxes.add(balloonBox.withMinZ(balloonBox.maxZ - balloonWallThickness));
         }
 
         return boxes;
@@ -727,11 +725,6 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
         }
 
         return boxes;
-    }
-
-    @Override
-    public Map<Box, List<Entity>> getCollidingEntities(Stream<Box> boundingBoxes) {
-        return EntityCollisions.getCollidingEntities(this, boundingBoxes, RIDER_PREDICATE);
     }
 
     @Override

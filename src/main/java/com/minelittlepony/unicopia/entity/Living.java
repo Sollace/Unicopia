@@ -491,6 +491,7 @@ public abstract class Living<T extends LivingEntity> extends BaseEquine<T> imple
 
     @Override
     public void toNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.toNBT(compound, lookup);
         enchants.toNBT(compound, lookup);
         spells.getSlots().toNBT(compound, lookup);
         compound.putNullable("carrier", Uuids.CODEC, getCarrierId().orElse(null));
@@ -500,6 +501,7 @@ public abstract class Living<T extends LivingEntity> extends BaseEquine<T> imple
 
     @Override
     public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.fromNBT(compound, lookup);
         enchants.fromNBT(compound, lookup);
         spells.getSlots().fromNBT(compound, lookup);
         setCarrier(compound.get("carrier", Uuids.CODEC).orElse(null));

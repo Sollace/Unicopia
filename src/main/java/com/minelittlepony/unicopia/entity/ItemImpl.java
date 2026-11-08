@@ -132,12 +132,14 @@ public class ItemImpl extends BaseEquine<ItemEntity> implements Physics.Source {
 
     @Override
     public void toNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.toNBT(compound, lookup);
         compound.put("owner_race", Race.CODEC, getSpecies());
         physics.toNBT(compound, lookup);
     }
 
     @Override
     public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.fromNBT(compound, lookup);
         setSpecies(compound.get("owner_race", Race.CODEC).orElse(Race.HUMAN));
         physics.fromNBT(compound, lookup);
     }

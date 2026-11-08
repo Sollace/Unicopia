@@ -67,6 +67,9 @@ public class AirBalloonEntityRenderer extends MobEntityRenderer<AirBalloonEntity
             entity.gravityBoxes.forEach(box -> {
                 VertexRendering.drawBox(matrices, buffer, box.offset(posOffset), 1, 0, 0, 0.3F);
             });
+            entity.passengerGroundBoxes.forEach(box -> {
+                VertexRendering.drawBox(matrices, buffer, box.expand(MathHelper.EPSILON).offset(posOffset), 0, 0, 1, 1);
+            });
         }
     }
 
@@ -90,6 +93,7 @@ public class AirBalloonEntityRenderer extends MobEntityRenderer<AirBalloonEntity
         Box box = entity.getBoundingBox();
         state.collissionBoxes = MultiBox.unbox(box, true);
         state.interactionBoxes = MultiBox.unbox(box, false);
+        state.passengerGroundBoxes = entity.getGroundBoxes();
         state.gravityBoxes = entity.getGravityZoneBoxes();
         state.hasSoulFlame = entity.getStackInHand(Hand.MAIN_HAND).isOf(Items.SOUL_LANTERN);
         state.pos = entity.getPos();
@@ -135,6 +139,7 @@ public class AirBalloonEntityRenderer extends MobEntityRenderer<AirBalloonEntity
         public List<Box> collissionBoxes = List.of();
         public List<Box> interactionBoxes = List.of();
         public List<Box> gravityBoxes = List.of();
+        public List<Box> passengerGroundBoxes = List.of();
         public Vec3d pos;
 
         public float yaw;

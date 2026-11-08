@@ -1,10 +1,7 @@
 package com.minelittlepony.unicopia.entity.collision;
 
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
-
 import com.minelittlepony.unicopia.entity.collision.EntityCollisions.ComplexCollidable;
 
 import net.minecraft.block.ShapeContext;
@@ -19,8 +16,6 @@ public interface MultiBoundingBoxEntity extends ComplexCollidable {
     default List<Box> getGravityZoneBoxes() {
         return getBoundingBoxes(((Entity)this).getBoundingBox());
     }
-
-    Map<Box, List<Entity>> getCollidingEntities(Stream<Box> boundingBoxes);
 
     @Override
     default void getCollissionShapes(ShapeContext context, Consumer<VoxelShape> output) {

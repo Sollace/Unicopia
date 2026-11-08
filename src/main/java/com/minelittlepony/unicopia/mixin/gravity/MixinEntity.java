@@ -11,8 +11,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.minelittlepony.unicopia.entity.Equine;
 import com.minelittlepony.unicopia.entity.Physics;
@@ -28,13 +26,6 @@ import net.minecraft.util.math.Vec3d;
 abstract class MixinEntity implements EntityDuck {
     @Shadow
     private BlockPos blockPos;
-
-    @Inject(method = "getFinalGravity", at = @At("RETURN"), cancellable = true)
-    private void modifyGravity(CallbackInfoReturnable<Double> info) {
-        if (get() instanceof Physics.Source source) {
-            info.setReturnValue(Math.abs(source.getPhysics().calcGravity(info.getReturnValue())));
-        }
-    }
 
     @Inject(method = "setPos", at = @At(
             value = "FIELD",

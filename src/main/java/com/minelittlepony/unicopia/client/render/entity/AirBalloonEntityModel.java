@@ -100,7 +100,7 @@ public class AirBalloonEntityModel extends EntityModel<AirBalloonEntityRenderer.
     public static TexturedModelData getCanopyModelData() {
         ModelData modelData = new ModelData();
         ModelPartData root = modelData.getRoot();
-        ModelPartData balloon = root.addChild("canopy", ModelPartBuilder.create().cuboid(-54, -178, -59, 112, 120, 112, Dilation.NONE), ModelTransform.origin(0, 24, 0));
+        ModelPartData balloon = root.addChild("canopy", ModelPartBuilder.create().cuboid(-56, -178, -56, 112, 120, 112, Dilation.NONE), ModelTransform.origin(0, 24, 0));
         balloon.addChild("rope_d", ModelPartBuilder.create().cuboid(-2, -68, 0, 2, 68, 2, Dilation.NONE), ModelTransform.of(-14, -11, -16, 0.4363F, 0, -0.4363F));
         balloon.addChild("rope_c", ModelPartBuilder.create().cuboid(-2, -68, 0, 2, 68, 2, Dilation.NONE), ModelTransform.of(-14, -11, 11, -0.4363F, 0, -0.4363F));
         balloon.addChild("rope_b", ModelPartBuilder.create().cuboid(-2, -68, 0, 2, 68, 2, Dilation.NONE), ModelTransform.of(17, -11, 11, -0.4363F, 0, 0.4363F));

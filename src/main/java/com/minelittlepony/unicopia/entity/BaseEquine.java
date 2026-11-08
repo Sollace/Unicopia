@@ -91,9 +91,11 @@ public class BaseEquine<T extends Entity> implements Equine<T>, Guest {
 
     @Override
     public void toNBT(NbtCompound compound, WrapperLookup lookup) {
+        transportation.fromNBT(compound.getCompoundOrEmpty("transportation"), lookup);
     }
 
     @Override
     public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
+        compound.put("transportation", transportation.toNBT(lookup));
     }
 }
